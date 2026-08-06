@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LSS Prüfungstrainer – Multiple Choice</title>
+<style>
+  :root{
+    --bg:#0f172a; --card:#1e293b; --card2:#273449; --accent:#6366f1; --accent2:#818cf8;
+    --good:#22c55e; --bad:#ef4444; --text:#f1f5f9; --muted:#94a3b8; --border:#334155;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; min-height:100vh; background:linear-gradient(160deg,#0f172a,#1e1b4b);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--text); display:flex; justify-content:center; padding:32px 16px;
+  }
+  .wrap{width:100%; max-width:720px;}
+  h1{font-size:1.5rem; margin:0 0 4px;}
+  .subtitle{color:var(--muted); font-size:0.9rem; margin-bottom:24px;}
+  .card{
+    background:var(--card); border:1px solid var(--border); border-radius:16px;
+    padding:28px; box-shadow:0 10px 30px rgba(0,0,0,0.35);
+  }
+  .hidden{display:none !important;}
+
+  /* Start screen */
+  fieldset{border:1px solid var(--border); border-radius:10px; padding:14px 16px; margin:0 0 18px;}
+  legend{padding:0 6px; color:var(--muted); font-size:0.85rem;}
+  label.opt{display:flex; align-items:center; gap:8px; padding:8px 4px; cursor:pointer; border-radius:8px;}
+  label.opt:hover{background:var(--card2);}
+  .row{display:flex; align-items:center; gap:8px; margin-top:10px;}
+  select, input[type=checkbox]{accent-color:var(--accent);}
+  select{background:var(--card2); color:var(--text); border:1px solid var(--border); border-radius:8px; padding:8px 10px; font-size:0.95rem;}
+  input[type=number]{
+    background:var(--card2); color:var(--text); border:1px solid var(--border); border-radius:8px;
+    padding:8px 10px; font-size:0.95rem; width:90px; accent-color:var(--accent);
+  }
+  .count-hint{color:var(--muted); font-size:0.82rem;}
+  button{
+    font-size:1rem; padding:12px 20px; border-radius:10px; border:none; cursor:pointer;
+    background:var(--accent); color:white; font-weight:600; transition:background .15s, transform .1s;
+  }
+  button:hover{background:var(--accent2);}
+  button:active{transform:scale(0.98);}
+  button.secondary{background:var(--card2); color:var(--text); border:1px solid var(--border);}
+  button:disabled{opacity:0.4; cursor:not-allowed;}
+  .btn-row{display:flex; justify-content:space-between; align-items:center; margin-top:22px; gap:10px;}
+
+  /* Quiz screen */
+  .progress-wrap{background:var(--card2); border-radius:20px; height:8px; overflow:hidden; margin-bottom:18px;}
+  .progress-bar{background:linear-gradient(90deg,var(--accent),var(--accent2)); height:100%; width:0%; transition:width .25s;}
+  .meta{display:flex; justify-content:space-between; color:var(--muted); font-size:0.85rem; margin-bottom:10px;}
+  .topic-tag{background:var(--card2); padding:3px 10px; border-radius:20px; font-size:0.75rem; color:var(--accent2);}
+  .question{font-size:1.15rem; font-weight:600; margin:6px 0 20px; line-height:1.5;}
+  .options{display:flex; flex-direction:column; gap:10px;}
+  .option{
+    text-align:left; background:var(--card2); border:1px solid var(--border); border-radius:10px;
+    padding:13px 16px; color:var(--text); font-size:0.98rem; cursor:pointer; display:flex; gap:10px;
+  }
+  .option:hover{border-color:var(--accent2);}
+  .option.selected{border-color:var(--accent); background:#312e81;}
+  .option .letter{font-weight:700; color:var(--accent2); min-width:18px;}
+  .option.correct{border-color:var(--good); background:#052e1c; box-shadow:0 0 0 1px var(--good) inset;}
+  .option.correct .letter{color:var(--good);}
+  .option.incorrect{border-color:var(--bad); background:#3a0f12; box-shadow:0 0 0 1px var(--bad) inset;}
+  .option.incorrect .letter{color:var(--bad);}
+  .option.disabled{cursor:default;}
+  .option .mark{margin-left:auto; font-weight:700;}
+  .feedback{margin-top:14px; padding:10px 14px; border-radius:10px; font-weight:600; font-size:0.95rem;}
+  .feedback.ok{background:#052e1c; color:var(--good);}
+  .feedback.bad{background:#3a0f12; color:var(--bad);}
+
+  /* Mode toggle */
+  .mode-toggle{display:flex; gap:8px; margin-bottom:18px;}
+  .mode-btn{
+    flex:1; text-align:center; padding:12px 10px; border-radius:10px; border:1px solid var(--border);
+    background:var(--card2); color:var(--muted); cursor:pointer; font-weight:600; font-size:0.92rem;
+  }
+  .mode-btn.active{background:var(--accent); color:white; border-color:var(--accent);}
+
+  /* Flashcards */
+  .fc-scene{perspective:1200px; margin-bottom:20px;}
+  .fc-card{
+    position:relative; width:100%; min-height:260px; cursor:pointer;
+    transform-style:preserve-3d; transition:transform .5s;
+  }
+  .fc-card.flipped{transform:rotateY(180deg);}
+  .fc-face{
+    position:absolute; inset:0; backface-visibility:hidden; border-radius:14px;
+    display:flex; align-items:center; justify-content:center; text-align:center;
+    padding:26px; font-size:1.1rem; line-height:1.5; border:1px solid var(--border);
+  }
+  .fc-front{background:var(--card2); font-weight:600;}
+  .fc-back{background:#312e81; transform:rotateY(180deg); font-weight:500;}
+  .fc-hint{text-align:center; color:var(--muted); font-size:0.8rem; margin:-10px 0 20px;}
+  .fc-actions{display:flex; gap:10px; margin-top:4px;}
+  .fc-actions button{flex:1;}
+  .btn-again{background:var(--bad);}
+  .btn-again:hover{background:#f87171;}
+  .btn-know{background:var(--good);}
+  .btn-know:hover{background:#4ade80;}
+  .fc-summary-row{display:flex; justify-content:space-around; text-align:center; margin:10px 0 24px;}
+  .fc-summary-row div span{display:block; font-size:1.6rem; font-weight:800;}
+  .fc-summary-row .know span{color:var(--good);}
+  .fc-summary-row .again span{color:var(--bad);}
+
+  /* Level system */
+  .level-badge{background:var(--card2); padding:3px 10px; border-radius:20px; font-size:0.75rem; color:#facc15; border:1px solid var(--border);}
+  .level-panel{margin-bottom:18px;}
+  .level-panel-title{color:var(--muted); font-size:0.82rem; margin-bottom:8px;}
+  .level-grid{display:grid; grid-template-columns:repeat(6,1fr); gap:6px;}
+  .level-cell{background:var(--card2); border:1px solid var(--border); border-radius:8px; padding:8px 2px; text-align:center;}
+  .level-cell.mastered{border-color:var(--good);}
+  .level-cell .lvl-num{font-size:0.68rem; color:var(--muted);}
+  .level-cell .lvl-count{font-size:1.05rem; font-weight:700;}
+  .level-cell.mastered .lvl-count{color:var(--good);}
+  #resetLevelsBtn{width:100%; font-size:0.8rem; padding:8px; margin-top:10px;}
+
+  /* Results */
+  .score-circle{
+    width:140px; height:140px; border-radius:50%; margin:0 auto 20px; display:flex; align-items:center; justify-content:center;
+    flex-direction:column; border:6px solid var(--good);
+  }
+  .score-circle.fail{border-color:var(--bad);}
+  .score-circle .pct{font-size:1.8rem; font-weight:800;}
+  .score-circle .frac{font-size:0.85rem; color:var(--muted);}
+  .verdict{text-align:center; font-size:1.2rem; font-weight:700; margin-bottom:6px;}
+  .verdict.pass{color:var(--good);}
+  .verdict.fail{color:var(--bad);}
+  .subverdict{text-align:center; color:var(--muted); margin-bottom:24px; font-size:0.9rem;}
+  .review-item{border-left:3px solid var(--bad); background:var(--card2); border-radius:8px; padding:12px 14px; margin-bottom:10px;}
+  .review-item.correct-shown{border-left-color:var(--good);}
+  .review-item .rq{font-weight:600; margin-bottom:6px;}
+  .review-item .ra{font-size:0.88rem; color:var(--muted); margin:2px 0;}
+  .review-item .ra b{color:var(--text);}
+  h2{font-size:1.1rem; margin:26px 0 12px;}
+  .history-item{display:flex; justify-content:space-between; font-size:0.85rem; padding:6px 0; border-bottom:1px solid var(--border); color:var(--muted);}
+  .history-item b{color:var(--text);}
+  footer{text-align:center; color:var(--muted); font-size:0.78rem; margin-top:18px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🎓 LSS Prüfungstrainer</h1>
+  <div class="subtitle">Change Leadership · Design Thinking · Digitalisierung &amp; KI · Prompting &amp; GPT</div>
+
+  <!-- START SCREEN -->
+  <div class="card" id="screen-start">
+    <div class="mode-toggle">
+      <div class="mode-btn active" id="modeMcBtn" data-mode="mc">📝 Multiple-Choice-Test</div>
+      <div class="mode-btn" id="modeFcBtn" data-mode="fc">🃏 Lernkarten</div>
+    </div>
+
+    <div class="level-panel hidden" id="levelPanel">
+      <div class="level-panel-title">Kartenfortschritt (Level 1–6, ab Level 6 nicht mehr abgefragt)</div>
+      <div class="level-grid" id="levelGrid"></div>
+      <button class="secondary" id="resetLevelsBtn">Kartenfortschritt zurücksetzen</button>
+    </div>
+
+    <fieldset>
+      <legend>Themenbereiche (Mehrfachauswahl – nur prüfungsrelevante auswählen)</legend>
+      <div id="topicChecks"></div>
+      <div class="row" style="margin-top:6px;">
+        <button type="button" class="secondary" id="topicAllBtn" style="font-size:0.78rem; padding:6px 12px;">Alle auswählen</button>
+        <button type="button" class="secondary" id="topicNoneBtn" style="font-size:0.78rem; padding:6px 12px;">Keine auswählen</button>
+      </div>
+      <div class="row">
+        <label for="countInput" style="min-width:150px;">Anzahl Fragen/Karten</label>
+        <input type="number" id="countInput" min="1">
+        <span class="count-hint" id="countHint"></span>
+      </div>
+      <div class="row" id="mcFactorRow">
+        <label for="mcFactorInput" style="min-width:150px;">Wiederholungsfaktor (MC)</label>
+        <input type="number" id="mcFactorInput" min="0" max="10" step="0.5" value="2" style="width:70px;">
+        <span class="count-hint">0 = rein zufällig, höher = oft richtig beantwortete Fragen werden seltener gezogen</span>
+      </div>
+      <div class="row">
+        <input type="checkbox" id="shuffleCheck" checked>
+        <label for="shuffleCheck">Fragen/Karten mischen</label>
+      </div>
+      <div class="row" id="shuffleOptsRow">
+        <input type="checkbox" id="shuffleOptsCheck" checked>
+        <label for="shuffleOptsCheck">Antwortoptionen mischen</label>
+      </div>
+      <div class="row" id="mcStatsResetRow">
+        <button type="button" class="secondary" id="resetMcStatsBtn" style="font-size:0.78rem; padding:6px 12px;">MC-Statistik zurücksetzen</button>
+      </div>
+    </fieldset>
+    <button id="startBtn" style="width:100%;">Test starten</button>
+
+    <div id="historyBox" class="hidden">
+      <h2>Bisherige Versuche</h2>
+      <div id="historyList"></div>
+      <button id="clearHistoryBtn" class="secondary" style="margin-top:12px; font-size:0.8rem; padding:8px 14px;">Verlauf löschen</button>
+    </div>
+  </div>
+
+  <!-- QUIZ SCREEN -->
+  <div class="card hidden" id="screen-quiz">
+    <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="meta">
+      <span id="qCounter">Frage 1 von 35</span>
+      <span class="topic-tag" id="qTopic">Change Leadership</span>
+    </div>
+    <div class="question" id="qText"></div>
+    <div class="options" id="qOptions"></div>
+    <div id="qFeedback"></div>
+    <div class="btn-row">
+      <button class="secondary" id="quitBtn">Abbrechen</button>
+      <button id="nextBtn" disabled>Weiter</button>
+    </div>
+  </div>
+
+  <!-- RESULTS SCREEN -->
+  <div class="card hidden" id="screen-results">
+    <div class="score-circle" id="scoreCircle">
+      <div class="pct" id="scorePct">0%</div>
+      <div class="frac" id="scoreFrac">0/0</div>
+    </div>
+    <div class="verdict" id="verdictText"></div>
+    <div class="subverdict">Bestehensgrenze: 90 %</div>
+
+    <div id="reviewSection"></div>
+
+    <div class="btn-row">
+      <button class="secondary" id="restartBtn">Zurück zum Start</button>
+      <button id="retryBtn">Nochmal versuchen</button>
+    </div>
+  </div>
+
+  <!-- FLASHCARD SCREEN -->
+  <div class="card hidden" id="screen-fc">
+    <div class="progress-wrap"><div class="progress-bar" id="fcProgressBar"></div></div>
+    <div class="meta">
+      <span id="fcCounter">Karte 1 von 13</span>
+      <span>
+        <span class="topic-tag" id="fcTopic">Change Leadership</span>
+        <span class="level-badge" id="fcLevel">Level 2/6</span>
+      </span>
+    </div>
+    <div class="fc-scene">
+      <div class="fc-card" id="fcCard">
+        <div class="fc-face fc-front" id="fcFront"></div>
+        <div class="fc-face fc-back" id="fcBack"></div>
+      </div>
+    </div>
+    <div class="fc-hint" id="fcHint">Karte antippen, um die Antwort zu zeigen</div>
+    <div class="fc-actions hidden" id="fcActions">
+      <button class="btn-again" id="fcAgainBtn">🔴 Nochmal üben</button>
+      <button class="btn-know" id="fcKnowBtn">🟢 Weiß ich</button>
+    </div>
+    <div class="btn-row">
+      <button class="secondary" id="fcQuitBtn">Abbrechen</button>
+      <div></div>
+    </div>
+  </div>
+
+  <!-- FLASHCARD DONE SCREEN -->
+  <div class="card hidden" id="screen-fc-done">
+    <h2 style="margin-top:0;">🃏 Stapel durchgearbeitet</h2>
+    <div class="fc-summary-row">
+      <div class="know"><span id="fcKnowCount">0</span>Weiß ich</div>
+      <div class="again"><span id="fcAgainCount">0</span>Nochmal üben</div>
+    </div>
+    <div class="btn-row">
+      <button class="secondary" id="fcRestartBtn">Zurück zum Start</button>
+      <button id="fcRetryUnknownBtn">Nur unsichere wiederholen</button>
+    </div>
+    <div class="btn-row">
+      <button class="secondary" id="fcRetryAllBtn" style="width:100%;">Ganzen Stapel nochmal</button>
+    </div>
+  </div>
+
+  <footer>Lernstand wird lokal in deinem Browser gespeichert (localStorage) – kein Server, keine Cloud.</footer>
+</div>
+
+<script>
+// ---------- Fragenkatalog ----------
+const QUESTIONS = [
+  {topic:'change', label:'Change Leadership', q:'Was ist laut Lernmaterial KEIN typischer Grund für das Scheitern von Change-Projekten?', options:['Fehlende Kommunikation der Veränderungsnotwendigkeit','Zu viel Einbindung der Betroffenen','Fehlendes Vorbildverhalten der Führungskraft','Fehlende Verankerung im Alltag'], correct:1},
+  {topic:'change', label:'Change Leadership', q:'Welche drei Kernaufgaben hat eine Führungskraft im Change-Prozess?', options:['Kontrollieren, Sanktionieren, Delegieren','Sinn stiften, Orientierung geben, Sicherheit vermitteln','Planen, Organisieren, Budgetieren','Motivieren, Bewerten, Belohnen'], correct:1},
+  {topic:'change', label:'Change Leadership', q:'Welche Reihenfolge der emotionalen Veränderungskurve ist korrekt?', options:['Widerstand → Schock → Integration → Einsicht','Schock/Verneinung → Widerstand → Einsicht → Ausprobieren → Erkenntnis → Integration','Einsicht → Widerstand → Schock → Erkenntnis','Integration → Ausprobieren → Schock → Widerstand'], correct:1},
+  {topic:'change', label:'Change Leadership', q:'Wie wird der Tiefpunkt der Veränderungskurve bezeichnet?', options:['"Tal der Tränen"','"Point of no Return"','"Krisental"','"Nullpunkt"'], correct:0},
+  {topic:'change', label:'Change Leadership', q:'Was kennzeichnet passiven Widerstand?', options:['Offene Kritik in Meetings','Dienst nach Vorschrift / Rückzug','Aktives Boykottieren','Lautstarker Protest'], correct:1},
+  {topic:'change', label:'Change Leadership', q:'Wie sollte eine Führungskraft mit Widerstand umgehen?', options:['Ignorieren, bis er von selbst verschwindet','Widerstand unterdrücken','Ernst nehmen, Ursachen erfragen, Beteiligung ermöglichen','Betroffene versetzen'], correct:2},
+  {topic:'change', label:'Change Leadership', q:'Was bedeutet das Prinzip "Overcommunicate"?', options:['Nur einmal, aber sehr ausführlich informieren','Klar, wiederholt und ehrlich über mehrere Kanäle kommunizieren','Ausschließlich schriftlich kommunizieren','Kommunikation auf das Nötigste beschränken'], correct:1},
+  {topic:'change', label:'Change Leadership', q:'Welcher Faktor gehört NICHT zu den genannten Erfolgsfaktoren für nachhaltigen Wandel?', options:['Sichtbare Quick Wins','Klare Vision und Zwischenziele','Möglichst späte Einbindung von Schlüsselpersonen','Verankerung neuer Verhaltensweisen in der Kultur'], correct:2},
+  {topic:'change', label:'Change Leadership', q:'"Führungskräfte verändern nicht durch das, was sie sagen, sondern durch..."', options:['ihre Position.','das, was sie vorleben.','ihre Erfahrung.','klare Anweisungen.'], correct:1},
+  {topic:'change', label:'Change Leadership', q:'Welche zwei Instrumente werden als zentrale Führungsinstrumente im Change genannt?', options:['Kontrolle und Sanktion','Aktives Zuhören und Feedback','Reporting und KPIs','Belohnung und Bestrafung'], correct:1},
+
+  {topic:'design', label:'Design Thinking', q:'Welche drei Faktoren bilden das Innovationsdreieck im Design Thinking?', options:['Wünschbarkeit, Machbarkeit, Wirtschaftlichkeit','Qualität, Kosten, Zeit','Effizienz, Effektivität, Nachhaltigkeit','Kreativität, Struktur, Kontrolle'], correct:0},
+  {topic:'design', label:'Design Thinking', q:'Woher stammt Design Thinking ursprünglich?', options:['MIT und Google','Stanford d.school und IDEO','Harvard Business School','Fraunhofer-Institut'], correct:1},
+  {topic:'design', label:'Design Thinking', q:'Ist der Design-Thinking-Prozess linear?', options:['Ja, streng linear','Nein, iterativ mit ständigen Feedback-Schleifen','Nur in der ersten Phase iterativ','Linear, aber mit einer einzigen Rückkopplung am Ende'], correct:1},
+  {topic:'design', label:'Design Thinking', q:'Welche Reihenfolge der 6 Phasen ist korrekt?', options:['Beobachten → Verstehen → Testen → Definieren → Ideen finden → Prototypen','Verstehen → Beobachten → Definieren → Ideen finden → Prototypen → Testen','Ideen finden → Prototypen → Testen → Verstehen → Beobachten → Definieren','Definieren → Verstehen → Beobachten → Prototypen → Ideen finden → Testen'], correct:1},
+  {topic:'design', label:'Design Thinking', q:'Was gehört zum "Problemraum"?', options:['Ideenfindung, Prototyping, Testen','Verstehen, Beobachten, Definieren','Nur die Prototyping-Phase','Nur die Testphase'], correct:1},
+  {topic:'design', label:'Design Thinking', q:'Wie heißt das Modell, das Divergenz/Konvergenz in Problem- und Lösungsraum visualisiert?', options:['Double-Diamond-Modell','Fishbone-Modell','SWOT-Modell','Kano-Modell'], correct:0},
+  {topic:'design', label:'Design Thinking', q:'Was ist eine Empathy Map?', options:['Ein Diagramm zur Risikobewertung','Ein Werkzeug mit den Kategorien Sagt/Denkt/Fühlt/Tut','Ein Werkzeug zur Budgetplanung','Eine Methode zur Prozessvisualisierung'], correct:1},
+  {topic:'design', label:'Design Thinking', q:'Wofür steht die Abkürzung "HMW"?', options:['"How Many Weeks"','"How Might We…?"','"High Market Worth"','"Human Made Workflow"'], correct:1},
+  {topic:'design', label:'Design Thinking', q:'Was bedeutet "quick & dirty" im Kontext von Design Thinking?', options:['Prototypen möglichst schnell und einfach bauen','Tests ohne Nutzerbeteiligung durchführen','Ideen ohne Dokumentation sammeln','Feedback ignorieren, um Zeit zu sparen'], correct:0},
+  {topic:'design', label:'Design Thinking', q:'Was sollte man beim Testen eines Prototyps vermeiden?', options:['Feedback strukturiert festhalten','Den Prototyp erklären oder verteidigen','Nutzer:innen offen beobachten','Mehrere Nutzer:innen testen lassen'], correct:1},
+
+  {topic:'digital', label:'Digitalisierung & KI', q:'Was ist der Unterschied zwischen Digitalisierung und digitaler Transformation?', options:['Es gibt keinen Unterschied','Digitalisierung = analog→digital; digitale Transformation = Technologieeinsatz zur Automatisierung/Optimierung','Digitale Transformation bezieht sich nur auf Software','Digitalisierung ist der übergeordnete Begriff für digitale Transformation'], correct:1},
+  {topic:'digital', label:'Digitalisierung & KI', q:'Wann begann Industrie 4.0 ungefähr?', options:['Ende 18. Jahrhundert','Anfang 1970er','Ca. 2011','Ende 19. Jahrhundert'], correct:2},
+  {topic:'digital', label:'Digitalisierung & KI', q:'Was zeichnet ein "Smart Product" aus?', options:['Es ist besonders günstig','Es kann während Herstellung/Nutzung Daten speichern und kommunizieren','Es wird ausschließlich manuell bedient','Es benötigt keine Stromversorgung'], correct:1},
+  {topic:'digital', label:'Digitalisierung & KI', q:'Welches Cloud-Servicemodell liefert fertige Software wie Microsoft 365?', options:['IaaS','PaaS','SaaS','DaaS'], correct:2},
+  {topic:'digital', label:'Digitalisierung & KI', q:'Was unterscheidet Value Based Services von Value Added Services?', options:['Value Based gehört zum Kerngeschäft, Value Added nicht','Value Added ist immer teurer','Value Based wird immer outgesourct','Es gibt keinen inhaltlichen Unterschied'], correct:0},
+  {topic:'digital', label:'Digitalisierung & KI', q:'Wie lautet die richtige Reihenfolge des Digitalisierungsprozesses (Tag 1)?', options:['Strategie → Ist-Zustand → Ziel → Umsetzung','Ist-Zustand → Zielzustand → Strategie → Umsetzung/Erfolgskontrolle','Umsetzung → Ist-Zustand → Strategie → Ziel','Ziel → Umsetzung → Ist-Zustand → Strategie'], correct:1},
+  {topic:'digital', label:'Digitalisierung & KI', q:'Was zählt zu CapEx?', options:['Materialkosten','Wartungskosten','Investitionen in Gebäude/Maschinen (abschreibbar)','Laufende Lizenzgebühren'], correct:2},
+  {topic:'digital', label:'Digitalisierung & KI', q:'Wie lautet die ROI-Formel?', options:['ROI = Nutzen × Gesamtkosten','ROI = (Nutzen − Gesamtkosten) / Gesamtkosten × 100 %','ROI = Gesamtkosten / Nutzen × 100 %','ROI = Nutzen / Amortisationszeit'], correct:1},
+  {topic:'digital', label:'Digitalisierung & KI', q:'Ab welcher Amortisationszeit gilt eine Digitalisierungsmaßnahme i. d. R. als NICHT mehr freigabefähig?', options:['< 1 Jahr','< 3 Jahre','≥ 3 Jahre','Amortisationszeit spielt keine Rolle'], correct:2},
+  {topic:'digital', label:'Digitalisierung & KI', q:'Welche Reihenfolge hat der Risikomanagement-Zyklus?', options:['Steuern → Bewerten → Identifizieren → Maßnahmen definieren','Identifizieren → Bewerten → Maßnahmen definieren → Steuern','Bewerten → Identifizieren → Steuern → Maßnahmen definieren','Maßnahmen definieren → Identifizieren → Steuern → Bewerten'], correct:1},
+  {topic:'digital', label:'Digitalisierung & KI', q:'Was zeigt ein Gantt-Diagramm zusätzlich zu einem einfachen Ablaufdiagramm?', options:['Nur die Reihenfolge der Schritte','Die zeitliche Planung (Start, Ende, Dauer)','Ausschließlich die Verantwortlichkeiten','Die Kostenverteilung'], correct:1},
+  {topic:'digital', label:'Digitalisierung & KI', q:'Was beschreibt ein "Use Case"?', options:['Eine technische Fehlermeldung','Eine Aufgabe/Funktion eines Systems','Ein Budgetposten','Eine Cloud-Abrechnungsart'], correct:1},
+  {topic:'digital', label:'Digitalisierung & KI', q:'Was unterscheidet "Include" von "Extend" im Use-Case-Diagramm?', options:['Include wird nur bei Bedingung aufgerufen, Extend immer','Include = wird immer aufgerufen; Extend = nur bei erfüllter Bedingung','Beide bedeuten dasselbe','Extend bezieht sich nur auf externe Akteure'], correct:1},
+  {topic:'digital', label:'Digitalisierung & KI', q:'Was unterscheidet Big Data von Smart Data?', options:['Big Data ist immer wertvoller als Smart Data','Big Data = sehr große, oft ungenutzte Datenmengen; Smart Data = hochwertige, nützliche Daten für konkrete Anwendungsfälle','Smart Data bezieht sich nur auf Finanzdaten','Es gibt keinen Unterschied'], correct:1},
+  {topic:'digital', label:'Digitalisierung & KI', q:'Nenne die drei "V"s von Big Data.', options:['Volume, Velocity, Variety','Value, Vision, Velocity','Volume, Verification, Value','Variety, Vision, Verification'], correct:0},
+
+  {topic:'prompting', label:'Prompting & GPT', q:'Was ist ein Prompt aus Sicht der KI?', options:['Ein Computerprogramm, das automatisch Antworten generiert','Jede Form von Information bzw. Kontext, die der KI hilft, die Absicht des Nutzers zu verstehen und umzusetzen','Eine Datenbank mit vortrainierten Antworten','Ein Fehlerprotokoll der KI'], correct:1},
+  {topic:'prompting', label:'Prompting & GPT', q:'Muss ein Prompt immer Text enthalten?', options:['Ja, ausschließlich Text ist möglich','Nein, ein Prompt kann auch aus Bild, Datei oder nicht-textueller Steuerung bestehen','Nein, nur Bilder sind als Prompt zulässig','Ja, sonst funktioniert die KI nicht'], correct:1},
+  {topic:'prompting', label:'Prompting & GPT', q:'Was gilt laut Schulung für Einsteiger im Prompting?', options:['Kürze schlägt Klarheit','Klarheit schlägt Kürze – je konkreter, detaillierter und kontextreicher, desto besser das Ergebnis','Rollen sollten nie vergeben werden','Ein Prompt darf nur aus einem Wort bestehen'], correct:1},
+  {topic:'prompting', label:'Prompting & GPT', q:'Aus welchen Teilen besteht ein Prompt laut der Vorgehensweise?', options:['Rolle, Ziel, Kontext, Ergebnisform','Passwort, Rolle, Zeitstempel','Nur Ziel und Ausgabeformat','Nur die Rolle'], correct:0},
+  {topic:'prompting', label:'Prompting & GPT', q:'Was gehört zum "idealen Prompt-Aufbau"?', options:['Ziel/Kontext, Format des Ergebnisses, Zielgruppe, Ausgabeform','Nur die Ausgabeform','Nur der Kontext','Preis, Lieferzeit, Garantie'], correct:0},
+  {topic:'prompting', label:'Prompting & GPT', q:'Was passiert im "Prompt-Flow", wenn die Ausgabe nicht "OK" ist?', options:['Der Prozess wird abgebrochen','Es wird schrittweise ergänzt: Datendatei, visuelles Element, Präzision erhöhen, Feintuning', 'Die KI beendet das Gespräch','Es wird automatisch ein neues Modell gewählt'], correct:1},
+  {topic:'prompting', label:'Prompting & GPT', q:'Welche optimale Prompt-Länge wird empfohlen?', options:['10–20 Wörter','150–400 Wörter','Mindestens 1000 Wörter','Es gibt keine Empfehlung'], correct:1},
+  {topic:'prompting', label:'Prompting & GPT', q:'Was ist "Chain of Thoughts" im Kontext von Prompting?', options:['Eine Methode, das Modell Schritt für Schritt denken bzw. eine Anleitung befolgen zu lassen','Eine Verkettung mehrerer KI-Modelle','Ein Fehler im Modelltraining','Eine Bezahlfunktion von ChatGPT'], correct:0},
+  {topic:'prompting', label:'Prompting & GPT', q:'Wie wirkt sich ein niedrigerer Temperatur-Wert (nahe 0) auf die Ausgabe aus?', options:['Präziser und gleichförmiger','Kreativer und abwechslungsreicher','Unpräziser und "hin und her"','Kein Einfluss auf die Ausgabe'], correct:0},
+  {topic:'prompting', label:'Prompting & GPT', q:'Was sind Tokens?', options:['Bezahleinheiten für Premium-Zugänge','Die technische Einheit über Wortfragmente, auf die das Modell trainiert ist','Eine Methode zur Bildbearbeitung','Sicherheitszertifikate für Prompts'], correct:1},
+  {topic:'prompting', label:'Prompting & GPT', q:'Wann eignet sich laut Schulung am besten ein Text-Prompt?', options:['Wenn man etwas visuell zeigen oder verändern will','Immer dann, wenn man eine Idee, Aufgabe oder Analyse starten will','Nur bei der Bildbearbeitung','Nur bei umfangreichen Excel-Dateien'], correct:1},
+  {topic:'prompting', label:'Prompting & GPT', q:'Was ist ein zentrales Risiko eines Superprompts?', options:['Er ist immer kürzer als ein modularer Prompt','Er ist starr, lang, unflexibel und führt häufiger zu Prompt-Overfitting (Halluzinationen)','Er benötigt keine Rolle','Er funktioniert nur mit Bildern'], correct:1},
+  {topic:'prompting', label:'Prompting & GPT', q:'Was ist ein Vorteil von modularem Prompting gegenüber einem Superprompt?', options:['Er ist starrer und dadurch zuverlässiger','Flexibel/adaptiv, Module einzeln ergänzbar/entfernbar, bessere Skalierbarkeit, weniger Halluzinationen','Er benötigt kein Ziel','Er ist für neue Modelle grundsätzlich ungeeignet'], correct:1},
+  {topic:'prompting', label:'Prompting & GPT', q:'Welcher Nachteil wird für modulares Prompting genannt?', options:['Es erfordert mehr Denkdisziplin, kein "Copy Paste", Anfänger vergessen häufig wichtige Module','Es ist immer langsamer als ein Superprompt','Es kann keine Kontextinformationen enthalten','Es funktioniert nur bei Bild-Prompts'], correct:0},
+  {topic:'prompting', label:'Prompting & GPT', q:'Was wird bei den rechtlichen/praktischen Empfehlungen zum Prompting besonders betont?', options:['Möglichst viele sensible Daten eingeben, um bessere Ergebnisse zu erhalten','Keine sensiblen Daten verwenden, Daten anonymisieren, Bewusstsein schärfen','Rechtliche Aspekte spielen beim Prompting keine Rolle','Nur bei Bild-Prompts auf Datenschutz achten'], correct:1},
+  {topic:'prompting', label:'Prompting & GPT', q:'Wofür steht GPT?', options:['General Purpose Technology','Generative Pre-Trained Transformer','Global Prompt Tool','Guided Processing Technique'], correct:1},
+  {topic:'prompting', label:'Prompting & GPT', q:'Wie funktioniert ein GPT laut der einfachen Erklärung?', options:['Es liest den Text, denkt über Layermodell/Muster- und Logikerkennung nach und gibt eine passende Antwort','Es sucht die Antwort in einer festen Datenbank','Es funktioniert nur mit vorprogrammierten Antworten ohne Textverständnis','Es kann ausschließlich Text verarbeiten, keine Bilder oder Dateien'], correct:0},
+  {topic:'prompting', label:'Prompting & GPT', q:'Hat ein GPT Gefühle?', options:['Ja, es empfindet echte Emotionen','Nein, es hat keine Gefühle, reagiert aber über Mustererkennung auf den Ton der Eingabe','Nur bei Verwendung der Bezahlversion','Ja, aber nur negative Emotionen'], correct:1},
+  {topic:'prompting', label:'Prompting & GPT', q:'Welcher Nachteil wird bei unnötigen Zusatzsätzen/übertriebener Höflichkeit im Prompt genannt?', options:['Das Modell versteht die Anfrage nicht mehr','Erhöhter Energieverbrauch und CO2-Ausstoß','Der Prompt wird automatisch gelöscht','Es entstehen keine Nachteile'], correct:1},
+  {topic:'prompting', label:'Prompting & GPT', q:'Aus welchen drei Schritten besteht der Aufbau eines eigenen (customized) GPT?', options:['Vortraining, Feintuning, Deployment','Anmeldung, Bezahlung, Nutzung','Recherche, Testen, Löschen','Prompting, Iteration, Archivierung'], correct:0},
+  {topic:'prompting', label:'Prompting & GPT', q:'Was braucht man laut Schulung, um einen eigenen GPT zu erstellen?', options:['Fortgeschrittene Programmierkenntnisse','Keine Programmierkenntnisse; klare Sprache statt Fachjargon reicht aus','Einen eigenen Server','Ein Informatikstudium'], correct:1},
+];
+
+// ---------- Lernkarten ----------
+const FLASHCARDS = [
+  {topic:'change', label:'Change Leadership', front:'Was sind die vier häufigsten Gründe, warum Change-Projekte scheitern?', back:'Fehlende/unklare Kommunikation der Veränderungsnotwendigkeit; mangelnde Einbindung der Betroffenen; fehlendes Vorbildverhalten ("Walk the talk"); fehlende Verankerung im Alltag.'},
+  {topic:'change', label:'Change Leadership', front:'Welche drei Kernaufgaben hat eine Führungskraft im Change-Prozess?', back:'Sinn stiften (Warum?), Orientierung geben (Wohin?), Sicherheit vermitteln (Wie?).'},
+  {topic:'change', label:'Change Leadership', front:'Nenne die Phasen der emotionalen Veränderungskurve in der richtigen Reihenfolge.', back:'Schock/Verneinung → Widerstand → Einsicht → Ausprobieren → Erkenntnis → Integration.'},
+  {topic:'change', label:'Change Leadership', front:'Wie wird der Tiefpunkt der Veränderungskurve genannt?', back:'"Tal der Tränen".'},
+  {topic:'change', label:'Change Leadership', front:'Was unterscheidet aktiven von passivem Widerstand?', back:'Aktiver Widerstand = offene Kritik. Passiver Widerstand = Dienst nach Vorschrift, Rückzug.'},
+  {topic:'change', label:'Change Leadership', front:'Ist Widerstand in Veränderungsprozessen ein Zeichen von Fehlverhalten?', back:'Nein – er ist ein normaler, gesunder Bestandteil von Veränderungsprozessen.'},
+  {topic:'change', label:'Change Leadership', front:'Wie sollte eine Führungskraft mit Widerstand umgehen?', back:'Ernst nehmen, Ursachen erfragen, Beteiligung ermöglichen – statt ihn zu unterdrücken.'},
+  {topic:'change', label:'Change Leadership', front:'Was bedeutet "Overcommunicate" im Change-Kontext?', back:'Klar, wiederholt und ehrlich kommunizieren, über mehrere Kanäle/Formate; Dialog wichtiger als reine Information.'},
+  {topic:'change', label:'Change Leadership', front:'Nenne vier Erfolgsfaktoren für nachhaltigen Wandel.', back:'Klare Vision + Zwischenziele; frühe Einbindung von Schlüsselpersonen/Multiplikatoren; sichtbare Quick Wins; Verankerung neuer Verhaltensweisen in Strukturen, Prozessen und Kultur.'},
+  {topic:'change', label:'Change Leadership', front:'Wodurch gelingt Veränderung laut dem zentralen Merksatz?', back:'Durch Überzeugung und Beteiligung – nicht durch Anordnung.'},
+  {topic:'change', label:'Change Leadership', front:'Wodurch verändern Führungskräfte laut dem zweiten Merksatz?', back:'Durch das, was sie vorleben – nicht durch das, was sie sagen.'},
+  {topic:'change', label:'Change Leadership', front:'Welche Balance müssen Führungskräfte im Wandel halten?', back:'Balance zwischen Fordern und Fördern.'},
+  {topic:'change', label:'Change Leadership', front:'Welche zwei Führungsinstrumente werden als zentral genannt?', back:'Aktives Zuhören und Feedback.'},
+
+  {topic:'design', label:'Design Thinking', front:'Was ist Design Thinking (kurze Definition)?', back:'Ein nutzerzentrierter (human-centered) Innovations- und Problemlöseansatz, der Wünschbarkeit, Machbarkeit und Wirtschaftlichkeit in Einklang bringt.'},
+  {topic:'design', label:'Design Thinking', front:'Woher stammt Design Thinking (Ursprung)?', back:'Stanford d.school und die Innovationsagentur IDEO (u. a. David Kelley, Tim Brown).'},
+  {topic:'design', label:'Design Thinking', front:'Nenne die drei Erfolgsfaktoren des Innovationsdreiecks.', back:'Wünschbarkeit (Desirability), Machbarkeit (Feasibility), Wirtschaftlichkeit (Viability).'},
+  {topic:'design', label:'Design Thinking', front:'Ist Design Thinking ein linearer Prozess?', back:'Nein – iterativ, non-linear, mit ständigen Feedback-Schleifen.'},
+  {topic:'design', label:'Design Thinking', front:'Nenne die 6 Phasen des Design-Thinking-Prozesses in der richtigen Reihenfolge.', back:'Verstehen → Beobachten → Definieren → Ideen finden → Prototypen → Testen.'},
+  {topic:'design', label:'Design Thinking', front:'Was unterscheidet Problemraum und Lösungsraum?', back:'Problemraum = richtiges Problem finden (Verstehen/Beobachten/Definieren). Lösungsraum = richtige Lösung finden (Ideenfindung/Prototyping/Testen).'},
+  {topic:'design', label:'Design Thinking', front:'Wie heißt das Modell, das divergierendes/konvergierendes Denken in Problem- und Lösungsraum visualisiert?', back:'Double-Diamond-Modell.'},
+  {topic:'design', label:'Design Thinking', front:'Was ist eine Empathy Map?', back:'Werkzeug zur Nutzerbeobachtung mit den Kategorien Sagt / Denkt / Fühlt / Tut.'},
+  {topic:'design', label:'Design Thinking', front:'Was ist das Format eines Point-of-View-Statements?', back:'[Nutzer:in] braucht [Bedürfnis], weil [Erkenntnis].'},
+  {topic:'design', label:'Design Thinking', front:'Wofür steht "HMW" und wozu dient es?', back:'"How might we…?" – überführt das definierte Problem in eine offene, lösungsorientierte Fragestellung.'},
+  {topic:'design', label:'Design Thinking', front:'Was ist "Crazy 8\'s"?', back:'Ideation-Methode: 8 Ideen in 8 Minuten skizzieren.'},
+  {topic:'design', label:'Design Thinking', front:'Nenne die vier Brainstorming-Regeln.', back:'Keine Kritik, Quantität vor Qualität, wild denken erlaubt, auf Ideen anderer aufbauen.'},
+  {topic:'design', label:'Design Thinking', front:'Was bedeutet "quick & dirty" beim Prototyping?', back:'Prototypen so einfach und schnell wie möglich bauen (Papier, Rollenspiel, einfache Mock-ups).'},
+  {topic:'design', label:'Design Thinking', front:'Was sollte man beim Testen von Prototypen vermeiden?', back:'Den Prototyp erklären oder verteidigen – stattdessen offen beobachten und Feedback festhalten.'},
+  {topic:'design', label:'Design Thinking', front:'Nenne drei Unterschiede zwischen klassischem Problemlösen und Design Thinking.', back:'Linear vs. iterativ; technik-/produktgetrieben vs. nutzerzentriert; spätes vs. frühes und wiederholtes Prototyping/Testen.'},
+  {topic:'design', label:'Design Thinking', front:'Nenne vier Mindset-Merkmale von Design Thinking.', back:'Z. B. Empathie/Nutzerzentrierung, Bias to Action, Fehlertoleranz, Ambiguitätstoleranz (auch: interdisziplinäre Zusammenarbeit, Optimismus, Visualisieren statt reden).'},
+
+  {topic:'digital', label:'Digitalisierung & KI', front:'Was ist der Unterschied zwischen Digitalisierung und digitaler Transformation?', back:'Digitalisierung = Umwandlung analog → digital. Digitale Transformation = Einsatz digitaler Technologien zur Automatisierung/Optimierung von Prozessen.'},
+  {topic:'digital', label:'Digitalisierung & KI', front:'Nenne die 5 Stufen der industriellen Revolution mit Kernmerkmal.', back:'1.0 Webstuhl/Dampfkraft, 2.0 Massenproduktion/Fließband, 3.0 Computerisierung, 4.0 Vernetzung/KI/Autonomie, 5.0 Mensch/Nachhaltigkeit/Resilienz.'},
+  {topic:'digital', label:'Digitalisierung & KI', front:'Wann startete Industrie 4.0 ungefähr?', back:'Ca. 2011.'},
+  {topic:'digital', label:'Digitalisierung & KI', front:'Was ist ein "Smart Product"?', back:'Ein intelligentes Produkt, das während Herstellung/Nutzung Daten speichern und kommunizieren kann.'},
+  {topic:'digital', label:'Digitalisierung & KI', front:'Nenne die drei "Smart"-Bereiche.', back:'Smart Factory, Smart Customer, Smart Service.'},
+  {topic:'digital', label:'Digitalisierung & KI', front:'Nenne vier Vorteile der Digitalisierung.', back:'Z. B. Geschwindigkeit/Echtzeit, Effizienz, Transparenz/Rückverfolgbarkeit, Skalierbarkeit (auch: Kosteneinsparung, Predictive, Globalisierung/Inklusion).'},
+  {topic:'digital', label:'Digitalisierung & KI', front:'Nenne vier Nachteile der Digitalisierung.', back:'Z. B. Jobverlust, Datensicherheit, hohe Kosten, Komplexität (auch: Energieverbrauch, Monopolbildung, Privatsphäre).'},
+  {topic:'digital', label:'Digitalisierung & KI', front:'Was ist MapReduce und wofür wird es eingesetzt?', back:'Ein Verfahren zur Parallelisierung, um große Datenmengen (Big Data) zu verarbeiten/speichern.'},
+  {topic:'digital', label:'Digitalisierung & KI', front:'Nenne die drei Cloud-Servicemodelle mit Beispiel.', back:'SaaS (fertige Software, z. B. Microsoft 365), PaaS (Entwicklungsplattform), IaaS (Server, Speicher).'},
+  {topic:'digital', label:'Digitalisierung & KI', front:'Nenne drei Abrechnungsmodelle für Cloud-Services.', back:'Pay per Use, Abonnement, Freemium.'},
+  {topic:'digital', label:'Digitalisierung & KI', front:'Was unterscheidet Value Based Services von Value Added Services?', back:'Value Based = gehört zum Kerngeschäft (z. B. Tesla: Autos, Wartung/Reparatur). Value Added = nicht Kerngeschäft, kann von Dritten übernommen werden (z. B. Garantieverlängerung, Versicherung, Leasing).'},
+  {topic:'digital', label:'Digitalisierung & KI', front:'Nenne die 4 Schritte des Digitalisierungsprozesses (Tag 1).', back:'Ist-Zustand aufnehmen → Zielzustand definieren → Strategie entwickeln → Umsetzung und Erfolgskontrolle.'},
+  {topic:'digital', label:'Digitalisierung & KI', front:'Nenne die drei Budgetierungsmethoden.', back:'Prozentuale Budgetierung, projektbezogene Budgetierung, Top-Down-/Bottom-Up-Budgetierung.'},
+  {topic:'digital', label:'Digitalisierung & KI', front:'Was ist der Unterschied zwischen CapEx und OpEx?', back:'CapEx = Investitionskosten, abschreibbar (z. B. Gebäude, Maschinen). OpEx = Betriebskosten (z. B. Materialkosten, Wartung).'},
+  {topic:'digital', label:'Digitalisierung & KI', front:'Nenne die ROI-Formel.', back:'ROI = (Nutzen − Gesamtkosten) / Gesamtkosten × 100 %.'},
+  {topic:'digital', label:'Digitalisierung & KI', front:'Nenne die Amortisationszeit-Formel.', back:'Amortisationszeit = Gesamtkosten der Investition / jährlicher Rückfluss (Nutzen pro Jahr − Kosten pro Jahr).'},
+  {topic:'digital', label:'Digitalisierung & KI', front:'Bei welcher Amortisationszeit gilt eine Digitalisierungsmaßnahme i. d. R. als freigabefähig?', back:'Amortisationszeit < 3 Jahre (zusätzlich: ROI ≥ Mindestgrenze, Risikogröße, strategischer Nutzen).'},
+  {topic:'digital', label:'Digitalisierung & KI', front:'Nenne die 4 Schritte des Risikomanagement-Zyklus.', back:'Risiken identifizieren → bewerten (Schadensausmaß, Eintrittswahrscheinlichkeit) → Maßnahmen für kritische Risiken definieren → Risiken steuern.'},
+  {topic:'digital', label:'Digitalisierung & KI', front:'Was zeigt ein Gantt-Diagramm im Vergleich zu einem Ablaufdiagramm?', back:'Gantt-Diagramm zeigt die zeitliche Planung (Start/Ende/Dauer + Reihenfolge). Ablaufdiagramm zeigt nur die Reihenfolge.'},
+  {topic:'digital', label:'Digitalisierung & KI', front:'Nenne die 7 Schritte der Vorgehensweise bei Digitalisierungsprojekten (Tag 2).', back:'Stakeholder identifizieren → Anforderungen formulieren (Use Cases) → Systemkomponenten ermitteln → Komponenten auswählen → Risiken/Fehler abfangen → Beschaffen → Installieren.'},
+  {topic:'digital', label:'Digitalisierung & KI', front:'Was ist ein Use Case?', back:'Beschreibt eine Aufgabe/Funktion eines Systems (z. B. "automatische Fütterung").'},
+  {topic:'digital', label:'Digitalisierung & KI', front:'Was unterscheidet "Include" und "Extend" im Use-Case-Diagramm?', back:'Include = Use Case A ruft immer Use Case B auf. Extend = Use Case X ruft Use Case Y nur bei erfüllter Bedingung auf.'},
+  {topic:'digital', label:'Digitalisierung & KI', front:'Unterscheide Daten, Information und Wissen.', back:'Daten = reiner Messwert (z. B. 43,8 °C). Information = Daten im Kontext (Körpertemperatur des Huhns beträgt 43,8 °C). Wissen = Anwendung der Information (Normalbereich kennen und Handlung ableiten).'},
+  {topic:'digital', label:'Digitalisierung & KI', front:'Was unterscheidet Big Data von Smart Data?', back:'Big Data = sehr große Datenmengen (Volume, Velocity, Variety), oft nicht alle genutzt. Smart Data = hochwertige, nützliche Daten für konkrete Anwendungsfälle.'},
+  {topic:'digital', label:'Digitalisierung & KI', front:'Nenne die 3 Schritte des Smart Data Process.', back:'Identifizierung der Frage-/Problemstellung & Use Cases → Prototypisieren → Operationalisieren.'},
+  {topic:'digital', label:'Digitalisierung & KI', front:'Was ist ein digitaler Zwilling?', back:'Ein virtuelles Abbild der Realität, gespeist mit Daten des physischen Systems.'},
+  {topic:'digital', label:'Digitalisierung & KI', front:'Beschreibe kurz den paarweisen Vergleich zur Komponentenauswahl.', back:'Eigenschaften in einer Matrix eintragen, paarweise vergleichen (2 = wichtiger, 1 = gleich wichtig, 0 = unwichtiger), Zeilenwerte addieren, Rangfolge bestimmen.'},
+  {topic:'digital', label:'Digitalisierung & KI', front:'Nenne die Bewertungsskala der Pugh-Methode.', back:'−3 bis +3, Alternativen werden gegen eine Referenzlösung bewertet.'},
+  {topic:'digital', label:'Digitalisierung & KI', front:'Was besagt der Merksatz zum systemischen Denken?', back:'Wählt man die jeweils besten Einzelteile aus verschiedenen Systemen aus, hat man nicht automatisch das beste Gesamtsystem.'},
+  {topic:'digital', label:'Digitalisierung & KI', front:'Nenne die 3 V\'s von Big Data.', back:'Volume, Velocity, Variety.'},
+
+  {topic:'prompting', label:'Prompting & GPT', front:'Was ist ein Prompt aus Sicht einer KI?', back:'Jede Form von Information bzw. Kontext, die der KI hilft, die Absicht des Nutzers zu verstehen und umzusetzen.'},
+  {topic:'prompting', label:'Prompting & GPT', front:'Muss ein Prompt immer Text sein?', back:'Nein – auch Bild, Datei, Text+Bild-Kombination oder nicht-textuelle Steuerung (z. B. Klicks) können ein Prompt sein.'},
+  {topic:'prompting', label:'Prompting & GPT', front:'Was gilt für Einsteiger: Klarheit oder Kürze?', back:'Klarheit schlägt Kürze – je konkreter, detaillierter und kontextreicher, desto besser das Ergebnis.'},
+  {topic:'prompting', label:'Prompting & GPT', front:'Aus welchen Teilen besteht ein Prompt laut der Vorgehensweise?', back:'Rolle, Ziel, Kontext, Ergebnisform (ggf. mit Hinterfragen/Rückfragen).'},
+  {topic:'prompting', label:'Prompting & GPT', front:'Nenne die 8 Schritte der idealen Prompting-Vorgehensweise.', back:'Ziel definieren, Kontext bereitstellen, Rolle des Modells festlegen, Rahmenbedingungen präzisieren, Beispiel/Muster vorgeben, Ausgabe spezifizieren, Iteration, Finalisierung/Integration in den Workflow.'},
+  {topic:'prompting', label:'Prompting & GPT', front:'Was umfasst der ideale Prompt-Aufbau?', back:'Ziel/Kontext, Format des Ergebnisses, Zielgruppe, Ausgabeform.'},
+  {topic:'prompting', label:'Prompting & GPT', front:'Welche optimale Prompt-Länge wird empfohlen?', back:'150–400 Wörter (zu kurz: Modell muss raten; zu lang: Modell verliert Fokus).'},
+  {topic:'prompting', label:'Prompting & GPT', front:'Was ist "Chain of Thoughts"?', back:'Eine Schritt-für-Schritt-Anleitung im Prompt, die das Modell strukturiert durch die Aufgabe führt.'},
+  {topic:'prompting', label:'Prompting & GPT', front:'Wie wirkt ein niedriger vs. hoher Temperatur-Wert?', back:'Niedrig (nahe 0) = präziser, gleichförmiger. Hoch (nahe 1) = unpräziser, kreativer, "hin und her". Startwert meist 0,5.'},
+  {topic:'prompting', label:'Prompting & GPT', front:'Was sind Tokens?', back:'Die technische Einheit über Wortfragmente, auf die ein Modell trainiert ist ("Worte sind für Menschen, Tokens für die Maschine").'},
+  {topic:'prompting', label:'Prompting & GPT', front:'Wann eignet sich ein Text-Prompt am besten?', back:'Immer dann, wenn eine Idee, Aufgabe oder Analyse gestartet werden soll – schnell, präzise, flexibel.'},
+  {topic:'prompting', label:'Prompting & GPT', front:'Was ist ein Superprompt?', back:'Ein besonders ausführlicher, strukturierter und kontextreicher Prompt, um das KI-Modell gezielt auf komplexe Aufgaben oder eine bestimmte Denk-/Schreibweise einzustimmen.'},
+  {topic:'prompting', label:'Prompting & GPT', front:'Nenne zwei Nachteile eines Superprompts.', back:'Starr, lang, unflexibel; führt häufig zu Prompt-Overfitting (Halluzinationen); passt nicht gut auf neuere Modelle (ab ChatGPT 5.0).'},
+  {topic:'prompting', label:'Prompting & GPT', front:'Was ist modulares Prompting?', back:'Statt einem großen Prompt werden mehrere Prompts/Module (Rolle, Ziel/Output, Kontext, Qualitätskriterien) hintereinander bzw. nach Bedarf verwendet.'},
+  {topic:'prompting', label:'Prompting & GPT', front:'Nenne zwei Vorteile von modularem Prompting.', back:'Flexibel/adaptiv, leicht iterierbar, bessere Skalierbarkeit, weniger Halluzinationen, bessere Ergebnisqualität.'},
+  {topic:'prompting', label:'Prompting & GPT', front:'Nenne einen Nachteil von modularem Prompting.', back:'Erfordert mehr Denkdisziplin, kein "Copy Paste", Anfänger vergessen häufig wichtige Module.'},
+  {topic:'prompting', label:'Prompting & GPT', front:'Welche Empfehlung gilt für sensible Daten beim Prompting?', back:'Keine sensiblen Daten eingeben, Daten anonymisieren, bei Recherche/Vertragsgestaltung Bewusstsein schärfen (Was geben wir preis?).'},
+  {topic:'prompting', label:'Prompting & GPT', front:'Wofür steht GPT?', back:'Generative Pre-Trained Transformer.'},
+  {topic:'prompting', label:'Prompting & GPT', front:'Wie funktioniert ein GPT in 3 Schritten?', back:'1) Liest den Text, 2) denkt nach (Layermodell, Logik-/Mustererkennung), 3) gibt eine passende Antwort – kann auch Bilder/Dateien verarbeiten.'},
+  {topic:'prompting', label:'Prompting & GPT', front:'Hat ein GPT Gefühle?', back:'Nein, aber es reagiert per Mustererkennung auf den Ton der Eingabe; Freundlichkeit verbessert oft den Kontext, unnötige Zusatzsätze erhöhen aber Energieverbrauch/CO2.'},
+  {topic:'prompting', label:'Prompting & GPT', front:'Aus welchen 3 Schritten besteht der Aufbau eines eigenen (customized) GPT?', back:'Vortraining (Mustererkennung mit vielen Daten), Feintuning (Training auf das Fachgebiet), Deployment (Anwendung/Nutzung).'},
+  {topic:'prompting', label:'Prompting & GPT', front:'Was braucht man, um einen eigenen GPT zu erstellen?', back:'Keine Programmierkenntnisse – klare Sprache statt Fachjargon, klar definiertes Ziel und Zeitrahmen reichen.'},
+];
+
+// ---------- Karten-Level (Leitner-System, 6 Level, Start bei 2) ----------
+const LEVEL_MIN = 1;
+const LEVEL_START = 2;
+const LEVEL_MAX = 6;
+
+function loadLevels(){
+  try{ return JSON.parse(localStorage.getItem('lss_fc_levels') || '{}'); }catch(e){ return {}; }
+}
+let fcLevels = loadLevels();
+
+function getCardLevel(card){
+  const idx = FLASHCARDS.indexOf(card);
+  return fcLevels[idx] !== undefined ? fcLevels[idx] : LEVEL_START;
+}
+function setCardLevel(card, level){
+  const idx = FLASHCARDS.indexOf(card);
+  fcLevels[idx] = level;
+  localStorage.setItem('lss_fc_levels', JSON.stringify(fcLevels));
+}
+
+// ---------- MC-Statistik (Gewichtung nach Trefferquote) ----------
+function loadMcStats(){
+  try{ return JSON.parse(localStorage.getItem('lss_mc_stats') || '{}'); }catch(e){ return {}; }
+}
+let mcStats = loadMcStats();
+
+function getMcCorrectCount(qIdx){
+  return (mcStats[qIdx] && mcStats[qIdx].correct) || 0;
+}
+function recordMcAnswer(qIdx, wasCorrect){
+  if(!mcStats[qIdx]) mcStats[qIdx] = {correct:0, wrong:0};
+  if(wasCorrect) mcStats[qIdx].correct++; else mcStats[qIdx].wrong++;
+  localStorage.setItem('lss_mc_stats', JSON.stringify(mcStats));
+}
+
+// Gewichtete Ziehung ohne Zurücklegen (Efraimidis-Spirakis): Wahrscheinlichkeit proportional zum Gewicht.
+function weightedSample(items, weights, k){
+  const keyed = items.map((item, i) => ({
+    item,
+    key: Math.pow(Math.random(), 1 / Math.max(weights[i], 1e-6))
+  }));
+  keyed.sort((a, b) => b.key - a.key);
+  return keyed.slice(0, k).map(x => x.item);
+}
+
+// ---------- State ----------
+let activeQuestions = [];
+let currentIndex = 0;
+let selectedOption = null;
+let userAnswers = []; // {question, options, correctIndex, selectedIndex, topicLabel}
+
+// ---------- Elements ----------
+const screenStart = document.getElementById('screen-start');
+const screenQuiz = document.getElementById('screen-quiz');
+const screenResults = document.getElementById('screen-results');
+const screenFc = document.getElementById('screen-fc');
+const screenFcDone = document.getElementById('screen-fc-done');
+
+const topicChecksBox = document.getElementById('topicChecks');
+const topicAllBtn = document.getElementById('topicAllBtn');
+const topicNoneBtn = document.getElementById('topicNoneBtn');
+const shuffleCheck = document.getElementById('shuffleCheck');
+const shuffleOptsCheck = document.getElementById('shuffleOptsCheck');
+const shuffleOptsRow = document.getElementById('shuffleOptsRow');
+const countInput = document.getElementById('countInput');
+const countHint = document.getElementById('countHint');
+const startBtn = document.getElementById('startBtn');
+const modeMcBtn = document.getElementById('modeMcBtn');
+const modeFcBtn = document.getElementById('modeFcBtn');
+const levelPanel = document.getElementById('levelPanel');
+const levelGrid = document.getElementById('levelGrid');
+const resetLevelsBtn = document.getElementById('resetLevelsBtn');
+const mcFactorRow = document.getElementById('mcFactorRow');
+const mcFactorInput = document.getElementById('mcFactorInput');
+const mcStatsResetRow = document.getElementById('mcStatsResetRow');
+const resetMcStatsBtn = document.getElementById('resetMcStatsBtn');
+
+const savedFactor = localStorage.getItem('lss_mc_factor');
+if(savedFactor !== null) mcFactorInput.value = savedFactor;
+mcFactorInput.addEventListener('change', () => {
+  localStorage.setItem('lss_mc_factor', mcFactorInput.value);
+});
+resetMcStatsBtn.addEventListener('click', () => {
+  if(confirm('MC-Statistik (Trefferquote je Frage) wirklich zurücksetzen? Alle Fragen werden danach wieder gleich häufig gezogen.')){
+    mcStats = {};
+    localStorage.removeItem('lss_mc_stats');
+  }
+});
+
+let currentMode = 'mc';
+
+// ---------- Themenbereiche (Mehrfachauswahl) ----------
+const TOPICS = [
+  {key:'change', label:'Change Leadership'},
+  {key:'design', label:'Design Thinking'},
+  {key:'digital', label:'Digitalisierung & KI'},
+  {key:'prompting', label:'Prompting & GPT'},
+];
+
+topicChecksBox.innerHTML = TOPICS.map(t =>
+  `<label class="opt"><input type="checkbox" class="topicCheck" value="${t.key}" checked> ${t.label}</label>`
+).join('');
+const topicCheckEls = Array.from(document.querySelectorAll('.topicCheck'));
+
+function getSelectedTopics(){
+  return topicCheckEls.filter(el => el.checked).map(el => el.value);
+}
+
+function onTopicSelectionChange(){
+  updateCountHint();
+  renderLevelPanel();
+  startBtn.disabled = getSelectedTopics().length === 0;
+}
+topicCheckEls.forEach(el => el.addEventListener('change', onTopicSelectionChange));
+topicAllBtn.addEventListener('click', () => {
+  topicCheckEls.forEach(el => el.checked = true);
+  onTopicSelectionChange();
+});
+topicNoneBtn.addEventListener('click', () => {
+  topicCheckEls.forEach(el => el.checked = false);
+  onTopicSelectionChange();
+});
+
+function poolForCurrentSelection(){
+  const topics = getSelectedTopics();
+  if(currentMode === 'mc'){
+    return QUESTIONS.filter(q => topics.includes(q.topic));
+  }
+  return FLASHCARDS.filter(c => topics.includes(c.topic) && getCardLevel(c) < LEVEL_MAX); // Level 6 = gemeistert
+}
+
+function updateCountHint(){
+  const total = poolForCurrentSelection().length;
+  countInput.max = total;
+  countInput.placeholder = `Alle (${total})`;
+  countHint.textContent = total === 0 ? 'keine Themen ausgewählt' : `von ${total} verfügbar`;
+  if(countInput.value && parseInt(countInput.value, 10) > total){
+    countInput.value = total;
+  }
+}
+
+function renderLevelPanel(){
+  if(currentMode !== 'fc'){ levelPanel.classList.add('hidden'); return; }
+  levelPanel.classList.remove('hidden');
+  const topics = getSelectedTopics();
+  const cards = FLASHCARDS.filter(c => topics.includes(c.topic));
+  const counts = [0,0,0,0,0,0];
+  cards.forEach(c => { counts[getCardLevel(c) - 1]++; });
+  levelGrid.innerHTML = counts.map((n, i) => {
+    const lvl = i + 1;
+    const mastered = lvl === LEVEL_MAX;
+    return `<div class="level-cell ${mastered ? 'mastered' : ''}"><div class="lvl-num">${mastered ? '🏆 L6' : 'L' + lvl}</div><div class="lvl-count">${n}</div></div>`;
+  }).join('');
+}
+
+function refreshStartScreen(){
+  updateCountHint();
+  renderLevelPanel();
+  renderHistory();
+  startBtn.disabled = getSelectedTopics().length === 0;
+}
+
+resetLevelsBtn.addEventListener('click', () => {
+  if(confirm('Kartenfortschritt (alle Level) wirklich zurücksetzen? Alle Karten starten wieder bei Level 2.')){
+    fcLevels = {};
+    localStorage.removeItem('lss_fc_levels');
+    refreshStartScreen();
+  }
+});
+
+function setMode(mode){
+  currentMode = mode;
+  modeMcBtn.classList.toggle('active', mode === 'mc');
+  modeFcBtn.classList.toggle('active', mode === 'fc');
+  shuffleOptsRow.classList.toggle('hidden', mode === 'fc');
+  mcFactorRow.classList.toggle('hidden', mode === 'fc');
+  mcStatsResetRow.classList.toggle('hidden', mode === 'fc');
+  startBtn.textContent = mode === 'mc' ? 'Test starten' : 'Lernkarten starten';
+  updateCountHint();
+  renderLevelPanel();
+}
+modeMcBtn.addEventListener('click', () => setMode('mc'));
+modeFcBtn.addEventListener('click', () => setMode('fc'));
+updateCountHint();
+renderLevelPanel();
+
+const progressBar = document.getElementById('progressBar');
+const qCounter = document.getElementById('qCounter');
+const qTopic = document.getElementById('qTopic');
+const qText = document.getElementById('qText');
+const qOptions = document.getElementById('qOptions');
+const qFeedback = document.getElementById('qFeedback');
+const nextBtn = document.getElementById('nextBtn');
+const quitBtn = document.getElementById('quitBtn');
+
+const scoreCircle = document.getElementById('scoreCircle');
+const scorePct = document.getElementById('scorePct');
+const scoreFrac = document.getElementById('scoreFrac');
+const verdictText = document.getElementById('verdictText');
+const reviewSection = document.getElementById('reviewSection');
+const restartBtn = document.getElementById('restartBtn');
+const retryBtn = document.getElementById('retryBtn');
+
+const historyBox = document.getElementById('historyBox');
+const historyList = document.getElementById('historyList');
+const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+
+const fcProgressBar = document.getElementById('fcProgressBar');
+const fcCounter = document.getElementById('fcCounter');
+const fcTopic = document.getElementById('fcTopic');
+const fcLevel = document.getElementById('fcLevel');
+const fcCard = document.getElementById('fcCard');
+const fcFront = document.getElementById('fcFront');
+const fcBack = document.getElementById('fcBack');
+const fcHint = document.getElementById('fcHint');
+const fcActions = document.getElementById('fcActions');
+const fcAgainBtn = document.getElementById('fcAgainBtn');
+const fcKnowBtn = document.getElementById('fcKnowBtn');
+const fcQuitBtn = document.getElementById('fcQuitBtn');
+const fcKnowCount = document.getElementById('fcKnowCount');
+const fcAgainCount = document.getElementById('fcAgainCount');
+const fcRestartBtn = document.getElementById('fcRestartBtn');
+const fcRetryUnknownBtn = document.getElementById('fcRetryUnknownBtn');
+const fcRetryAllBtn = document.getElementById('fcRetryAllBtn');
+
+// ---------- Helpers ----------
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function loadHistory(){
+  try{ return JSON.parse(localStorage.getItem('lss_quiz_history') || '[]'); }catch(e){ return []; }
+}
+function saveHistoryEntry(entry){
+  const h = loadHistory();
+  h.unshift(entry);
+  localStorage.setItem('lss_quiz_history', JSON.stringify(h.slice(0,20)));
+}
+function renderHistory(){
+  const h = loadHistory();
+  if(h.length === 0){ historyBox.classList.add('hidden'); return; }
+  historyBox.classList.remove('hidden');
+  historyList.innerHTML = h.map(e => {
+    const date = new Date(e.date).toLocaleString('de-DE', {day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'});
+    return `<div class="history-item"><span>${date} · ${e.topicName}</span><b>${e.correct}/${e.total} (${e.pct}%)</b></div>`;
+  }).join('');
+}
+clearHistoryBtn.addEventListener('click', () => {
+  localStorage.removeItem('lss_quiz_history');
+  renderHistory();
+});
+renderHistory();
+
+// ---------- Start quiz ----------
+function buildQuiz(){
+  const topics = getSelectedTopics();
+  if(topics.length === 0){ alert('Bitte mindestens einen Themenbereich auswählen.'); return; }
+
+  // Fragen mit ihrem festen Index (für die Trefferquoten-Statistik) sammeln und nach Thema filtern
+  let pool = QUESTIONS
+    .map((q, idx) => ({q, idx}))
+    .filter(x => topics.includes(x.q.topic));
+
+  const desired = parseInt(countInput.value, 10);
+  const targetCount = (desired > 0 && desired < pool.length) ? desired : pool.length;
+
+  // Gewichtete Auswahl: je öfter eine Frage schon richtig beantwortet wurde, desto seltener wird sie gezogen
+  const factor = Math.max(parseFloat(mcFactorInput.value), 0) || 0;
+  const weights = pool.map(x => 1 / (1 + factor * getMcCorrectCount(x.idx)));
+  let selected = weightedSample(pool, weights, targetCount);
+
+  if(shuffleCheck.checked){
+    selected = shuffle(selected);
+  } else {
+    selected.sort((a, b) => a.idx - b.idx); // ursprüngliche Reihenfolge beibehalten
+  }
+
+  activeQuestions = selected.map(x => {
+    let options = x.q.options.map((text, idx) => ({text, isCorrect: idx === x.q.correct}));
+    if(shuffleOptsCheck.checked) options = shuffle(options);
+    return {q: x.q.q, label: x.q.label, options, idx: x.idx};
+  });
+  currentIndex = 0;
+  userAnswers = [];
+  screenStart.classList.add('hidden');
+  screenResults.classList.add('hidden');
+  screenQuiz.classList.remove('hidden');
+  renderQuestion();
+}
+
+let answered = false;
+
+function renderQuestion(){
+  const item = activeQuestions[currentIndex];
+  selectedOption = null;
+  answered = false;
+  nextBtn.disabled = true;
+  nextBtn.textContent = currentIndex === activeQuestions.length - 1 ? 'Test auswerten' : 'Weiter';
+  qCounter.textContent = `Frage ${currentIndex+1} von ${activeQuestions.length}`;
+  qTopic.textContent = item.label;
+  qText.textContent = item.q;
+  qFeedback.innerHTML = '';
+  progressBar.style.width = `${(currentIndex/activeQuestions.length)*100}%`;
+
+  const letters = ['A','B','C','D'];
+  qOptions.innerHTML = '';
+  item.options.forEach((opt, idx) => {
+    const div = document.createElement('div');
+    div.className = 'option';
+    div.innerHTML = `<span class="letter">${letters[idx]}</span><span>${opt.text}</span><span class="mark"></span>`;
+    div.addEventListener('click', () => {
+      if(answered) return; // Auswahl nach Beantwortung sperren
+      answered = true;
+      selectedOption = idx;
+
+      document.querySelectorAll('.option').forEach((o, oIdx) => {
+        o.classList.add('disabled');
+        if(item.options[oIdx].isCorrect){
+          o.classList.add('correct');
+          o.querySelector('.mark').textContent = '✓';
+        } else if(oIdx === idx){
+          o.classList.add('incorrect');
+          o.querySelector('.mark').textContent = '✗';
+        }
+      });
+
+      if(opt.isCorrect){
+        qFeedback.innerHTML = '<div class="feedback ok">✅ Richtig!</div>';
+      } else {
+        const correctText = item.options.find(o => o.isCorrect).text;
+        qFeedback.innerHTML = `<div class="feedback bad">❌ Falsch – richtig wäre: ${correctText}</div>`;
+      }
+      recordMcAnswer(item.idx, opt.isCorrect);
+
+      nextBtn.disabled = false;
+    });
+    qOptions.appendChild(div);
+  });
+}
+
+nextBtn.addEventListener('click', () => {
+  const item = activeQuestions[currentIndex];
+  userAnswers.push({
+    question: item.q,
+    label: item.label,
+    options: item.options,
+    selectedIndex: selectedOption
+  });
+  if(currentIndex < activeQuestions.length - 1){
+    currentIndex++;
+    renderQuestion();
+  } else {
+    showResults();
+  }
+});
+
+quitBtn.addEventListener('click', () => {
+  screenQuiz.classList.add('hidden');
+  screenStart.classList.remove('hidden');
+  refreshStartScreen();
+});
+
+// ---------- Results ----------
+function showResults(){
+  screenQuiz.classList.add('hidden');
+  screenResults.classList.remove('hidden');
+
+  const total = userAnswers.length;
+  const correctCount = userAnswers.filter(a => a.options[a.selectedIndex] && a.options[a.selectedIndex].isCorrect).length;
+  const pct = Math.round((correctCount/total)*1000)/10;
+  const passed = pct >= 90;
+
+  scorePct.textContent = pct + '%';
+  scoreFrac.textContent = `${correctCount}/${total}`;
+  scoreCircle.className = 'score-circle' + (passed ? '' : ' fail');
+  verdictText.textContent = passed ? '✅ Bestanden' : '❌ Nicht bestanden';
+  verdictText.className = 'verdict ' + (passed ? 'pass' : 'fail');
+
+  const wrong = userAnswers.filter(a => !(a.options[a.selectedIndex] && a.options[a.selectedIndex].isCorrect));
+  if(wrong.length === 0){
+    reviewSection.innerHTML = '<h2>🎉 Alle Fragen richtig beantwortet!</h2>';
+  } else {
+    let html = `<h2>Zu wiederholen (${wrong.length})</h2>`;
+    wrong.forEach(a => {
+      const correctOpt = a.options.find(o => o.isCorrect);
+      const yourOpt = a.options[a.selectedIndex];
+      html += `<div class="review-item">
+        <div class="rq">${a.question}</div>
+        <div class="ra">Deine Antwort: <b>${yourOpt ? yourOpt.text : '(keine Auswahl)'}</b></div>
+        <div class="ra">Richtig: <b>${correctOpt.text}</b></div>
+      </div>`;
+    });
+    reviewSection.innerHTML = html;
+  }
+
+  const selectedLabels = TOPICS.filter(t => getSelectedTopics().includes(t.key)).map(t => t.label);
+  const topicName = selectedLabels.length === TOPICS.length ? 'Alle Themen' : selectedLabels.join(', ');
+  saveHistoryEntry({date: Date.now(), topicName, correct: correctCount, total, pct});
+}
+
+restartBtn.addEventListener('click', () => {
+  screenResults.classList.add('hidden');
+  screenStart.classList.remove('hidden');
+  refreshStartScreen();
+});
+retryBtn.addEventListener('click', buildQuiz);
+
+// ---------- Lernkarten-Modus ----------
+let activeCards = [];
+let fcIndex = 0;
+let fcFlipped = false;
+let fcKnowTally = 0;
+let fcAgainTally = 0;
+let fcUnknownCards = [];
+let fcLastPool = [];
+
+function buildFlashcards(pool){
+  if(!pool && getSelectedTopics().length === 0){ alert('Bitte mindestens einen Themenbereich auswählen.'); return; }
+  let deck = pool ? pool.slice() : (() => {
+    const topics = getSelectedTopics();
+    let p = FLASHCARDS.filter(c => topics.includes(c.topic));
+    p = p.filter(c => getCardLevel(c) < LEVEL_MAX); // Level 6 = gemeistert, nicht mehr abfragen
+    if(shuffleCheck.checked) p = shuffle(p);
+    const desired = parseInt(countInput.value, 10);
+    if(desired > 0 && desired < p.length){ p = p.slice(0, desired); }
+    return p;
+  })();
+
+  if(deck.length === 0){
+    alert('In diesem Themenbereich sind aktuell alle Karten auf Level 6 (gemeistert) und werden nicht mehr abgefragt. Wähle einen anderen Themenbereich oder setze den Kartenfortschritt zurück.');
+    return;
+  }
+
+  activeCards = deck;
+  fcLastPool = deck;
+  fcIndex = 0;
+  fcKnowTally = 0;
+  fcAgainTally = 0;
+  fcUnknownCards = [];
+
+  screenStart.classList.add('hidden');
+  screenResults.classList.add('hidden');
+  screenFcDone.classList.add('hidden');
+  screenFc.classList.remove('hidden');
+  renderFlashcard();
+}
+
+function renderFlashcard(){
+  const card = activeCards[fcIndex];
+  fcFlipped = false;
+  fcCard.classList.remove('flipped');
+  fcActions.classList.add('hidden');
+  fcHint.textContent = 'Karte antippen, um die Antwort zu zeigen';
+  fcCounter.textContent = `Karte ${fcIndex+1} von ${activeCards.length}`;
+  fcTopic.textContent = card.label;
+  fcLevel.textContent = `Level ${getCardLevel(card)}/6`;
+  fcFront.textContent = card.front;
+  fcBack.textContent = card.back;
+  fcProgressBar.style.width = `${(fcIndex/activeCards.length)*100}%`;
+}
+
+fcCard.addEventListener('click', () => {
+  fcFlipped = !fcFlipped;
+  fcCard.classList.toggle('flipped', fcFlipped);
+  if(fcFlipped){
+    fcHint.textContent = '';
+    fcActions.classList.remove('hidden');
+  } else {
+    fcHint.textContent = 'Karte antippen, um die Antwort zu zeigen';
+    fcActions.classList.add('hidden');
+  }
+});
+
+function fcAdvance(knewIt){
+  const card = activeCards[fcIndex];
+  const level = getCardLevel(card);
+  if(knewIt){
+    setCardLevel(card, Math.min(level + 1, LEVEL_MAX));
+    fcKnowTally++;
+  } else {
+    setCardLevel(card, Math.max(level - 1, LEVEL_MIN));
+    fcAgainTally++;
+    fcUnknownCards.push(card);
+  }
+
+  if(fcIndex < activeCards.length - 1){
+    fcIndex++;
+    renderFlashcard();
+  } else {
+    fcProgressBar.style.width = '100%';
+    screenFc.classList.add('hidden');
+    screenFcDone.classList.remove('hidden');
+    fcKnowCount.textContent = fcKnowTally;
+    fcAgainCount.textContent = fcAgainTally;
+    fcRetryUnknownBtn.disabled = fcUnknownCards.length === 0;
+  }
+}
+fcKnowBtn.addEventListener('click', () => fcAdvance(true));
+fcAgainBtn.addEventListener('click', () => fcAdvance(false));
+
+fcQuitBtn.addEventListener('click', () => {
+  screenFc.classList.add('hidden');
+  screenStart.classList.remove('hidden');
+  refreshStartScreen();
+});
+
+fcRestartBtn.addEventListener('click', () => {
+  screenFcDone.classList.add('hidden');
+  screenStart.classList.remove('hidden');
+  refreshStartScreen();
+});
+fcRetryAllBtn.addEventListener('click', () => buildFlashcards(fcLastPool));
+fcRetryUnknownBtn.addEventListener('click', () => {
+  if(fcUnknownCards.length > 0) buildFlashcards(fcUnknownCards);
+});
+
+// ---------- Start-Button: Modus-Weiche ----------
+startBtn.addEventListener('click', () => {
+  if(currentMode === 'mc'){ buildQuiz(); } else { buildFlashcards(); }
+});
+</script>
+</body>
+</html>
