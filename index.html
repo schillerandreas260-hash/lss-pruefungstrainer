@@ -143,7 +143,7 @@
 <body>
 <div class="wrap">
   <h1>🎓 LSS Prüfungstrainer</h1>
-  <div class="subtitle">Change Leadership · Design Thinking · Digitalisierung &amp; KI · Prompting &amp; GPT</div>
+  <div class="subtitle">Change Leadership · Design Thinking · Digitalisierung &amp; KI · Prompting &amp; GPT · PMI Projektmanagement</div>
 
   <!-- START SCREEN -->
   <div class="card" id="screen-start">
@@ -337,6 +337,31 @@ const QUESTIONS = [
   {topic:'prompting', label:'Prompting & GPT', q:'Welcher Nachteil wird bei unnötigen Zusatzsätzen/übertriebener Höflichkeit im Prompt genannt?', options:['Das Modell versteht die Anfrage nicht mehr','Erhöhter Energieverbrauch und CO2-Ausstoß','Der Prompt wird automatisch gelöscht','Es entstehen keine Nachteile'], correct:1},
   {topic:'prompting', label:'Prompting & GPT', q:'Aus welchen drei Schritten besteht der Aufbau eines eigenen (customized) GPT?', options:['Vortraining, Feintuning, Deployment','Anmeldung, Bezahlung, Nutzung','Recherche, Testen, Löschen','Prompting, Iteration, Archivierung'], correct:0},
   {topic:'prompting', label:'Prompting & GPT', q:'Was braucht man laut Schulung, um einen eigenen GPT zu erstellen?', options:['Fortgeschrittene Programmierkenntnisse','Keine Programmierkenntnisse; klare Sprache statt Fachjargon reicht aus','Einen eigenen Server','Ein Informatikstudium'], correct:1},
+
+  {topic:'pmi', label:'PMI – Projektmanagement', q:'Wie ist ein Projekt laut PMI-Training definiert?', options:['Eine dauerhafte, wiederkehrende Tätigkeit zur Aufrechterhaltung des Betriebs','Eine einmalige, zeitlich begrenzte Initiative in einem speziellen/besonderen Kontext, die der Wertschöpfung dient','Ein Teil der Linienorganisation ohne festgelegtes Ende','Eine Sammlung von Programmen ohne gemeinsames Ziel'], correct:1},
+  {topic:'pmi', label:'PMI – Projektmanagement', q:'Wie lautet die richtige Hierarchie von "größer" zu "kleiner"?', options:['Programm > Portfolio > Projekt','Projekt > Portfolio > Programm','Portfolio > Programm > Projekt','Portfolio > Projekt > Programm'], correct:2},
+  {topic:'pmi', label:'PMI – Projektmanagement', q:'Im agilen Ansatz legen laut "magischem Dreieck" ... den Scope fest.', options:['Zeit und Kosten','Nur die Qualität','Ausschließlich der Sponsor','Der Scope wird im agilen Ansatz nie festgelegt'], correct:0},
+  {topic:'pmi', label:'PMI – Projektmanagement', q:'Im klassischen (plangetriebenen) Ansatz legt der Scope ... fest.', options:['nur die Qualität', 'Zeit und Kosten','das Budget allein','nichts, da der Scope im klassischen Ansatz variabel ist'], correct:1},
+  {topic:'pmi', label:'PMI – Projektmanagement', q:'Aus welchen drei Ecken besteht das magische Dreieck im Projektmanagement?', options:['Kosten, Zeit, Qualität/Scope','Team, Budget, Risiko','Planung, Ausführung, Abschluss','Sponsor, Kunde, Lieferant'], correct:0},
+  {topic:'pmi', label:'PMI – Projektmanagement', q:'Wie viele Leistungsdomänen definiert die 8. Ausgabe des PMBOK Guide?', options:['5','10','7','12'], correct:2},
+  {topic:'pmi', label:'PMI – Projektmanagement', q:'Was gilt laut Trainingsunterlagen für die "10 Wissensgebiete" der älteren PMBOK-Ausgaben?', options:['Sie sind explizit als prüfungsrelevant markiert','Sie sind explizit als nicht prüfungsrelevant markiert','Sie wurden durch 3 Leistungsdomänen ersetzt','Sie gelten nur für agile Projekte'], correct:1},
+  {topic:'pmi', label:'PMI – Projektmanagement', q:'Wofür steht PMO?', options:['Project Management Office','Programm-Management-Organisation','Portfolio Management Operations','Projekt-Milestone-Office'], correct:0},
+  {topic:'pmi', label:'PMI – Projektmanagement', q:'Was ist die Hauptaufgabe des Kernteams im Projektteam?', options:['Setzt die Anforderungen/Aufgaben um','Trifft ausschließlich strategische Entscheidungen','Ist nur extern beteiligt','Übernimmt die Rolle des Sponsors'], correct:0},
+  {topic:'pmi', label:'PMI – Projektmanagement', q:'Welche vier Prinzipien umfasst der PMI Code of Ethics?', options:['Fairness, Respekt, Verantwortung, Aufrichtigkeit','Effizienz, Effektivität, Qualität, Zeit','Planung, Steuerung, Kontrolle, Abschluss','Kosten, Zeit, Scope, Risiko'], correct:0},
+  {topic:'pmi', label:'PMI – Projektmanagement', q:'Wie ist ein Stakeholder definiert?', options:['Nur Personen innerhalb des Projektteams','Personen(gruppen), Institutionen, Behörden, die vom Projekt betroffen sind','Ausschließlich der Sponsor des Projekts','Nur externe Geldgeber'], correct:1},
+  {topic:'pmi', label:'PMI – Projektmanagement', q:'Was ist der erste Schritt im Kreislauf "Wirkungsvolles Engagement der Stakeholder"?', options:['Kommunikation managen','Stakeholder identifizieren','Stakeholderengagement überwachen','Kommunikationsmanagement planen'], correct:1},
+  {topic:'pmi', label:'PMI – Projektmanagement', q:'Wofür steht das "R" in RACI?', options:['Reviewed','Responsible','Reported','Required'], correct:1},
+  {topic:'pmi', label:'PMI – Projektmanagement', q:'Welches Dokument gilt laut Training als "geheimes Dokument"?', options:['Der Projektauftrag','Das Stakeholderregister','Der Kommunikationsmanagementplan','Das PSP-Verzeichnis'], correct:1},
+  {topic:'pmi', label:'PMI – Projektmanagement', q:'Wofür dient der Projektauftrag?', options:['Zur technischen Detailplanung einzelner Arbeitspakete','Als Legitimation des Projektes','Ausschließlich zur Budgetfreigabe durch die Bank','Als Ersatz für das Stakeholderregister'], correct:1},
+  {topic:'pmi', label:'PMI – Projektmanagement', q:'Was beschreiben Managementpläne im Projektmanagementplan?', options:['WIE etwas im Projekt gemacht wird','Ausschließlich das Budget','Nur die genehmigten Basispläne','Die externen Stakeholder'], correct:0},
+  {topic:'pmi', label:'PMI – Projektmanagement', q:'Was sind Baselines (Basispläne)?', options:['Unwichtige Zwischenergebnisse ohne Genehmigung','I. d. R. genehmigte Arbeitspläne (z. B. Scope-, Termin-, Finanzbaseline)','Nur Kommunikationsvorlagen','Eine Alternative zum Projektauftrag'], correct:1},
+  {topic:'pmi', label:'PMI – Projektmanagement', q:'Was beschreibt "Qualität" im Unterschied zu "Klasse"?', options:['Qualität = Erfüllungsgrad von Anforderungen; Klasse = Umfang technischer Merkmale','Qualität und Klasse bedeuten dasselbe','Klasse beschreibt nur den Preis, Qualität nur die Farbe','Qualität bezieht sich nur auf externe Lieferanten'], correct:0},
+  {topic:'pmi', label:'PMI – Projektmanagement', q:'Was bedeutet "Scope Out"?', options:['Was im Projekt gemacht werden darf','Was im Projekt nicht gemacht wird und nicht gemacht werden darf','Der finale Projektabschluss','Die Freigabe durch den Sponsor'], correct:1},
+  {topic:'pmi', label:'PMI – Projektmanagement', q:'Wofür steht PSP bzw. WBS?', options:['Projektstrukturplan / Work Breakdown Structure','Projektstatusplan / Weekly Business Summary','Personalstrukturplan / Workforce Balance Sheet','Projektsicherheitsplan / Work-Based Standard'], correct:0},
+  {topic:'pmi', label:'PMI – Projektmanagement', q:'Was ist die unterste Ebene eines Projektstrukturplans (PSP)?', options:['Das Planungspaket','Das Arbeitspaket (= Liefergegenstand)','Die Projektkostenstelle','Der Projekttitel'], correct:1},
+  {topic:'pmi', label:'PMI – Projektmanagement', q:'Was unterscheidet Push- von Pull-Kommunikation?', options:['Push = sendergesteuert (z. B. E-Mail); Pull = empfängergesteuert (z. B. SharePoint)','Push = empfängergesteuert; Pull = sendergesteuert','Beide Begriffe bedeuten dasselbe','Push-Kommunikation gibt es im Projektmanagement nicht'], correct:0},
+  {topic:'pmi', label:'PMI – Projektmanagement', q:'In welche Kategorie fällt ein "Vortrag" in der Kommunikationstypen-Matrix?', options:['schriftlich/informell','mündlich/formell','schriftlich/formell','mündlich/informell'], correct:1},
+  {topic:'pmi', label:'PMI – Projektmanagement', q:'Wann startet ein Projekt offiziell?', options:['Mit der ersten Projektidee','Mit der Übergabe des Projektauftrags an den Projektmanager','Erst mit dem Projektabschlussmeeting','Sobald das Budget ausgegeben ist'], correct:1},
 ];
 
 // ---------- Lernkarten ----------
@@ -425,6 +450,34 @@ const FLASHCARDS = [
   {topic:'prompting', label:'Prompting & GPT', front:'Hat ein GPT Gefühle?', back:'Nein, aber es reagiert per Mustererkennung auf den Ton der Eingabe; Freundlichkeit verbessert oft den Kontext, unnötige Zusatzsätze erhöhen aber Energieverbrauch/CO2.'},
   {topic:'prompting', label:'Prompting & GPT', front:'Aus welchen 3 Schritten besteht der Aufbau eines eigenen (customized) GPT?', back:'Vortraining (Mustererkennung mit vielen Daten), Feintuning (Training auf das Fachgebiet), Deployment (Anwendung/Nutzung).'},
   {topic:'prompting', label:'Prompting & GPT', front:'Was braucht man, um einen eigenen GPT zu erstellen?', back:'Keine Programmierkenntnisse – klare Sprache statt Fachjargon, klar definiertes Ziel und Zeitrahmen reichen.'},
+
+  {topic:'pmi', label:'PMI – Projektmanagement', front:'Wie ist ein Projekt laut PMI-Training definiert?', back:'Eine einmalige, zeitlich begrenzte Initiative in einem speziellen/besonderen Kontext, die der Wertschöpfung dient.'},
+  {topic:'pmi', label:'PMI – Projektmanagement', front:'Nenne die Hierarchie von Portfolio, Programm und Projekt.', back:'Portfolio (Sammlung von Projekten/Programmen/Portfolios für strategische Ziele) > Programm (voneinander abhängige Projekte) > Projekt.'},
+  {topic:'pmi', label:'PMI – Projektmanagement', front:'Was legt im agilen Ansatz den Scope fest?', back:'Zeit und Kosten legen den Scope fest (umgekehrt zum klassischen Ansatz).'},
+  {topic:'pmi', label:'PMI – Projektmanagement', front:'Was legt im klassischen Ansatz Zeit und Kosten fest?', back:'Der Scope (Anforderungen/Qualität) legt Zeit und Kosten fest.'},
+  {topic:'pmi', label:'PMI – Projektmanagement', front:'Aus welchen drei Ecken besteht das magische Dreieck im Projektmanagement?', back:'Kosten, Zeit, Qualität/Anforderungen (Scope).'},
+  {topic:'pmi', label:'PMI – Projektmanagement', front:'Nenne die Phasen des klassischen Projektlebenszyklus (Beispiel).', back:'Machbarkeit → Design/Planung → Entwicklung → Test → Implementierung → Abschluss.'},
+  {topic:'pmi', label:'PMI – Projektmanagement', front:'Wie heißt der Sprintaufbau im agilen Ansatz?', back:'Plan – Do – Check – Act.'},
+  {topic:'pmi', label:'PMI – Projektmanagement', front:'Wie viele Leistungsdomänen definiert die 8. PMBOK-Ausgabe?', back:'7 (Finanzen, Risiken, Stakeholder, Ressourcen, Governance, Terminplanung, Projektscope/Qualität).'},
+  {topic:'pmi', label:'PMI – Projektmanagement', front:'Was gilt laut Trainingsfolie für die 10 klassischen Wissensgebiete?', back:'Sie sind explizit als nicht prüfungsrelevant markiert.'},
+  {topic:'pmi', label:'PMI – Projektmanagement', front:'Was ist die Aufgabe des Projektmanagers?', back:'Leiter des Projekts – managt/koordiniert das Projekt (z. B. Überwachen des Terminplans).'},
+  {topic:'pmi', label:'PMI – Projektmanagement', front:'Was macht das PMO (Project Management Office)?', back:'Stellt Projektvorlagen bereit, überwacht und steuert.'},
+  {topic:'pmi', label:'PMI – Projektmanagement', front:'Was unterscheidet Kernteam und Supportteam?', back:'Kernteam setzt Anforderungen/Aufgaben um; Supportteam unterstützt bei der Entscheidungsfindung.'},
+  {topic:'pmi', label:'PMI – Projektmanagement', front:'Nenne die 4 Prinzipien des PMI Code of Ethics.', back:'Fairness/Gerechtigkeit, Respekt, Verantwortung, Aufrichtigkeit/Ehrlichkeit.'},
+  {topic:'pmi', label:'PMI – Projektmanagement', front:'Wie ist ein Stakeholder definiert?', back:'Personen(gruppen), Institutionen, Behörden, die vom Projekt betroffen sind.'},
+  {topic:'pmi', label:'PMI – Projektmanagement', front:'Nenne den Kreislauf "Wirkungsvolles Engagement der Stakeholder".', back:'Identifizieren → Engagement planen → Kommunikationsmanagement planen → Engagement managen → Kommunikation managen → Engagement überwachen → Kommunikation überwachen (und zurück zum Anfang).'},
+  {topic:'pmi', label:'PMI – Projektmanagement', front:'Wofür steht RACI?', back:'Responsible (Umsetzungsverantwortung), Accountable (Ergebnisverantwortung), Consulted, Informed.'},
+  {topic:'pmi', label:'PMI – Projektmanagement', front:'Welchen Status hat das Stakeholderregister laut Training?', back:'Es ist ein geheimes/vertrauliches Dokument.'},
+  {topic:'pmi', label:'PMI – Projektmanagement', front:'Wofür dient der Projektauftrag?', back:'Als Legitimation des Projektes (Projekttitel, Ziel, Sponsor, Team, Budget, Scope In/Out u. a.).'},
+  {topic:'pmi', label:'PMI – Projektmanagement', front:'Was beschreiben Managementpläne im Projektmanagementplan?', back:'WIE etwas im Projekt gemacht wird (z. B. Kosten-, Termin-, Kommunikations-, Stakeholdermanagementplan).'},
+  {topic:'pmi', label:'PMI – Projektmanagement', front:'Was sind Baselines (Basispläne)?', back:'I. d. R. genehmigte Arbeitspläne, z. B. Scope-, Termin- und Finanzbaseline.'},
+  {topic:'pmi', label:'PMI – Projektmanagement', front:'Was unterscheidet Qualität von Klasse?', back:'Qualität = Erfüllungsgrad von Anforderungen (z. B. Dicke der Bodenplatte). Klasse = Umfang technischer Merkmale (z. B. Bahn 1. vs. 2. Klasse).'},
+  {topic:'pmi', label:'PMI – Projektmanagement', front:'Was bedeuten Scope In und Scope Out?', back:'Scope In = was gemacht wird und gemacht werden darf. Scope Out = was nicht gemacht wird und nicht gemacht werden darf.'},
+  {topic:'pmi', label:'PMI – Projektmanagement', front:'Wofür steht PSP bzw. WBS?', back:'Projektstrukturplan / Work Breakdown Structure.'},
+  {topic:'pmi', label:'PMI – Projektmanagement', front:'Was ist die unterste Ebene eines PSP?', back:'Das Arbeitspaket (= Liefergegenstand); darüber liegt z. B. das Planungspaket.'},
+  {topic:'pmi', label:'PMI – Projektmanagement', front:'Was unterscheidet Push- und Pull-Kommunikation?', back:'Push = sendergesteuert (z. B. E-Mail, Newsletter). Pull = empfängergesteuert (z. B. SharePoint, Empfänger zieht sich Infos).'},
+  {topic:'pmi', label:'PMI – Projektmanagement', front:'Wann startet ein Projekt offiziell?', back:'Mit der Übergabe des Projektauftrags an den Projektmanager.'},
+  {topic:'pmi', label:'PMI – Projektmanagement', front:'Wann endet ein Projekt regulär?', back:'Wenn die Projektziele erreicht sind – offiziell mit Projektabschlussmeeting und Projektfreigabe.'},
 ];
 
 // ---------- Karten-Level (Leitner-System, 6 Level, Start bei 2) ----------
@@ -524,6 +577,7 @@ const TOPICS = [
   {key:'design', label:'Design Thinking'},
   {key:'digital', label:'Digitalisierung & KI'},
   {key:'prompting', label:'Prompting & GPT'},
+  {key:'pmi', label:'PMI – Projektmanagement'},
 ];
 
 topicChecksBox.innerHTML = TOPICS.map(t =>
