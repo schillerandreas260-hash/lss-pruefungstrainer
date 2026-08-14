@@ -143,7 +143,7 @@
 <body>
 <div class="wrap">
   <h1>🎓 LSS Prüfungstrainer</h1>
-  <div class="subtitle">Change Leadership · Design Thinking · Digitalisierung &amp; KI · Prompting &amp; GPT · PMI Projektmanagement</div>
+  <div class="subtitle">Change Leadership · Design Thinking · Digitalisierung &amp; KI · Prompting &amp; GPT · PMI Projektmanagement · CSR</div>
 
   <!-- START SCREEN -->
   <div class="card" id="screen-start">
@@ -424,6 +424,32 @@ const QUESTIONS = [
   {topic:'pmi', label:'PMI – Projektmanagement', q:'Was gehört zu den Aufgaben beim Projektabschluss?', options:['Nur die Rechnung stellen','Liefergegenstände übergeben, Ressourcen neu zuweisen, Budget freigeben, Projektkonten schließen, Dokumentation, Abschlussbericht','Ausschließlich das Team auflösen','Nur die finale Abnahme durch den Projektmanager'], correct:1},
   {topic:'pmi', label:'PMI – Projektmanagement', q:'Wie lauten die 4 Schritte des Anpassungsprozesses (Tailoring)?', options:['Auswählen des Entwicklungsansatzes → Anpassen an Organisation → Anpassen ans Projekt → Regelmäßiges Prüfen & Anpassen','Planen → Ausführen → Testen → Abschließen','Identifizieren → Bewerten → Steuern → Dokumentieren','Analysieren → Entscheiden → Umsetzen → Kommunizieren'], correct:0},
   {topic:'pmi', label:'PMI – Projektmanagement', q:'Wie viele Prinzipien des Projektmanagements werden im Training genannt?', options:['4','6','8','10'], correct:1},
+
+  {topic:'csr', label:'CSR', q:'Wofür steht CSR?', options:['Corporate Social Responsibility','Company Sustainability Report','Corporate Strategy Review','Certified Social Responsibility'], correct:0},
+  {topic:'csr', label:'CSR', q:'Wie verhält sich CR zu CSR laut Training?', options:['CR ist das genaue Gegenteil von CSR','CR wird häufig mit CSR gleichgesetzt (CSR = CR)','CR ist nur ein Teilbereich der Finanzberichterstattung','CR und CSR haben nichts miteinander zu tun'], correct:1},
+  {topic:'csr', label:'CSR', q:'Wofür steht CC (Corporate Citizenship)?', options:['Bürgerliches Engagement des Unternehmens','Interne Kostenkontrolle','Zertifizierung nach ISO 26000','Eine Kennzahl im Nachhaltigkeitsbericht'], correct:0},
+  {topic:'csr', label:'CSR', q:'Wofür steht ESG?', options:['Environmental, Social, Governance','European Sustainability Guidelines','Ecological Standard Group','Economic and Social Growth'], correct:0},
+  {topic:'csr', label:'CSR', q:'Welche Ebene der CSR-Pyramide nach Carroll bildet die Basis?', options:['Philanthropische Verantwortung','Ethische Verantwortung','Gesetzliche Verantwortung','Ökonomische Verantwortung'], correct:3},
+  {topic:'csr', label:'CSR', q:'Welche Ebene der CSR-Pyramide wird von der Gesellschaft "angestrebt" (nicht gefordert)?', options:['Ökonomische Verantwortung','Gesetzliche Verantwortung','Philanthropische Verantwortung','Ethische Verantwortung'], correct:2},
+  {topic:'csr', label:'CSR', q:'Was bedeutet Greenwashing?', options:['Ein zertifiziertes Recyclingverfahren','Unternehmen stellen sich ins "grüne Licht", ohne nachhaltige Maßnahmen tatsächlich umzusetzen','Ein staatliches Förderprogramm für nachhaltige Unternehmen','Die Reinigung von Produktionsanlagen mit umweltfreundlichen Mitteln'], correct:1},
+  {topic:'csr', label:'CSR', q:'Was bedeutet "nachhaltig" laut Training?', options:['Möglichst viele Ressourcen für zukünftiges Wachstum aufbrauchen','Nur soviele Ressourcen nutzen, wie recycelt, nachwachsen oder regeneriert werden kann','Ausschließlich auf fossile Energieträger verzichten','Nachhaltigkeit bezieht sich nur auf CO2-Emissionen'], correct:1},
+  {topic:'csr', label:'CSR', q:'Aus welchen drei Säulen besteht der Triple Bottom Line Ansatz?', options:['Ökologisch, ökonomisch, sozial/gesellschaftlich','Finanziell, rechtlich, technisch','Lokal, national, global','Produktion, Vertrieb, Service'], correct:0},
+  {topic:'csr', label:'CSR', q:'Wie viele Ziele umfassen die Sustainable Development Goals (SDG)?', options:['10','12','17','20'], correct:2},
+  {topic:'csr', label:'CSR', q:'Bis wann sollen die SDG laut Agenda 2030 erreicht werden?', options:['2025','2030','2035','2050'], correct:1},
+  {topic:'csr', label:'CSR', q:'Was ist das Leitprinzip der SDG?', options:['"Wachstum um jeden Preis"','"Niemanden zurücklassen"','"Erst die Wirtschaft, dann die Umwelt"','"Freiwilligkeit vor Verpflichtung"'], correct:1},
+  {topic:'csr', label:'CSR', q:'Wie lautet der erste Schritt des SDG-Kompasses?', options:['Ziele setzen','SDG verstehen','Integrieren','Kommunikation und Bericht'], correct:1},
+  {topic:'csr', label:'CSR', q:'Worauf basiert das CSR-RUG von 2017?', options:['Auf der EU-Richtlinie NFRD (Non Financial Reporting Directive)','Auf dem deutschen Lieferkettengesetz','Auf der ISO 26000','Auf den SDGs der UN'], correct:0},
+  {topic:'csr', label:'CSR', q:'Ab wie vielen Mitarbeitenden verpflichtet das CSR-RUG Unternehmen, zu CSR Stellung zu nehmen?', options:['250','500','1.000','2.000'], correct:1},
+  {topic:'csr', label:'CSR', q:'Ab wie vielen Mitarbeitenden gilt das Lieferkettengesetz (seit 2023)?', options:['250','500','1.000','5.000'], correct:2},
+  {topic:'csr', label:'CSR', q:'Welche Kriterien entscheiden über die CSRD-Berichtspflicht ab 2024?', options:['2 von 3 Kriterien: 250 Mitarbeitende, 40 Mio. € Jahresumsatz, 20 Mio. € Bilanzsumme','Nur die Anzahl der Mitarbeitenden','Ausschließlich der Jahresumsatz','Es gibt keine festen Kriterien'], correct:0},
+  {topic:'csr', label:'CSR', q:'Wer prüft den Nachhaltigkeitsbericht laut CSRD?', options:['Das eigene Controlling-Team','Unabhängige Prüfer (Wirtschaftsprüfer)','Die Belegschaft per Abstimmung','Der Nachhaltigkeitsbericht wird nicht geprüft'], correct:1},
+  {topic:'csr', label:'CSR', q:'Was passiert, wenn man sich nicht an die Berichtspflicht hält?', options:['Nichts, die Pflicht ist rein freiwillig','Geldstrafe, Strafverfahren, Ausschluss von öffentlichen Ausschreibungen, negatives Image','Nur eine Mahnung ohne weitere Konsequenzen','Automatische Insolvenz'], correct:1},
+  {topic:'csr', label:'CSR', q:'Welcher ESRS-Standard muss laut Training immer im Report behandelt werden?', options:['E1 – Klimawandel','E5 – Kreislaufwirtschaft','S4 – Verbraucher und Endnutzer','G1 – Unternehmensführung'], correct:0},
+  {topic:'csr', label:'CSR', q:'Was beschreibt die "doppelte Wesentlichkeit"?', options:['Nur die finanzielle Bedeutung eines Themas','Wesentlichkeit auf die Auswirkungen UND finanzielle Wesentlichkeit','Die doppelte Prüfung durch zwei Wirtschaftsprüfer','Zwei identische Berichte für unterschiedliche Zielgruppen'], correct:1},
+  {topic:'csr', label:'CSR', q:'Welche Emissionen umfasst Scope 1?', options:['Direkte Emissionen eines Unternehmens','Emissionen aus zugekaufter Energie','Indirekte Emissionen entlang der Wertschöpfungskette','Nur Emissionen aus der Produktentsorgung'], correct:0},
+  {topic:'csr', label:'CSR', q:'Welche Emissionen umfasst Scope 2?', options:['Direkte Emissionen eines Unternehmens','Emissionen aus zugekaufter Energie','Indirekte Emissionen entlang der Wertschöpfungskette','Emissionen aus dem Fuhrpark'], correct:1},
+  {topic:'csr', label:'CSR', q:'Wie lautet die Formel zur Berechnung von CO2e?', options:['CO2e = Verbrauch × Emissionsfaktor','CO2e = Verbrauch / Emissionsfaktor','CO2e = Emissionsfaktor − Verbrauch','CO2e = Verbrauch + Emissionsfaktor'], correct:0},
+  {topic:'csr', label:'CSR', q:'Welche Terminierung gilt laut Training für "mittelfristige" Ziele?', options:['1 Jahr','1–5 Jahre','5–10 Jahre','länger als 10 Jahre'], correct:1},
 ];
 
 // ---------- Lernkarten ----------
@@ -610,6 +636,43 @@ const FLASHCARDS = [
   {topic:'pmi', label:'PMI – Projektmanagement', front:'Was enthält ein Abschlussbericht?', back:'Allgemeine Informationen, Zusammenfassung, Abgleich Projektziele (Business Case), Kosten-/Zeitvergleich, Erfüllung rechtlicher Vorgaben, Risiken, Lessons Learned, Zufriedenheit.'},
   {topic:'pmi', label:'PMI – Projektmanagement', front:'Nenne die 4 Schritte des Anpassungsprozesses (Tailoring).', back:'Auswählen des Entwicklungsansatzes → Anpassen an Organisation → Anpassen ans Projekt → Regelmäßiges Prüfen & Anpassen.'},
   {topic:'pmi', label:'PMI – Projektmanagement', front:'Nenne die 6 Prinzipien des Projektmanagements.', back:'Holistischen Ansatz verfolgen, Qualität in Prozesse und Liefergegenstände einbetten, verantwortungsvoll führen, ermächtigte Kultur aufbauen, Fokus auf Wert, Nachhaltigkeit integrieren.'},
+
+  {topic:'csr', label:'CSR', front:'Wofür steht CSR?', back:'Corporate Social Responsibility – gesellschaftliche und soziale Verantwortung von Unternehmen.'},
+  {topic:'csr', label:'CSR', front:'Wie verhält sich CR zu CSR?', back:'CR (Corporate Responsibility) wird häufig mit CSR gleichgesetzt (CSR = CR).'},
+  {topic:'csr', label:'CSR', front:'Was bedeutet CC (Corporate Citizenship)?', back:'Bürgerliches Engagement des Unternehmens – eine Teilmenge von CSR/CR.'},
+  {topic:'csr', label:'CSR', front:'Wofür steht ESG?', back:'Environmental, Social, Governance (Umwelt, Soziales, Unternehmensführung).'},
+  {topic:'csr', label:'CSR', front:'Nenne die 4 Ebenen der CSR-Pyramide nach Carroll (von unten nach oben).', back:'Ökonomische Verantwortung → gesetzliche Verantwortung → ethische Verantwortung → philanthropische Verantwortung.'},
+  {topic:'csr', label:'CSR', front:'Welche Ebenen der CSR-Pyramide werden von der Gesellschaft "gefordert"?', back:'Die ökonomische und die gesetzliche Verantwortung.'},
+  {topic:'csr', label:'CSR', front:'Welche Ebene der CSR-Pyramide wird "angestrebt"?', back:'Die philanthropische Verantwortung (Spitze der Pyramide).'},
+  {topic:'csr', label:'CSR', front:'Was ist Greenwashing?', back:'Unternehmen stellen sich ins "grüne Licht", ohne nachhaltige Maßnahmen tatsächlich umzusetzen (z. B. über Zertifikate, PR-Aktionen, Spenden).'},
+  {topic:'csr', label:'CSR', front:'Woran kann man Greenwashing erkennen?', back:'An Buzzwords (vage, unbelegte Nachhaltigkeitsbegriffe) und mithilfe des "gesunden Menschenverstands" (GMV).'},
+  {topic:'csr', label:'CSR', front:'Was bedeutet "nachhaltig"?', back:'Nur soviele Ressourcen nutzen, wie recycelt werden kann, wie nachwachsen kann, wie regeneriert werden kann.'},
+  {topic:'csr', label:'CSR', front:'Nenne die drei Säulen des Triple Bottom Line Ansatzes.', back:'Ökologisch, ökonomisch, sozial/gesellschaftlich.'},
+  {topic:'csr', label:'CSR', front:'Was beschreibt der Triple Bottom Line Ansatz inhaltlich?', back:'Man benötigt eine Balance zwischen den drei Säulen; idealerweise entstehen positive Wechselwirkungen zwischen ihnen.'},
+  {topic:'csr', label:'CSR', front:'Nenne drei Rahmenwerke, an denen man sich bei Nachhaltigkeit orientieren kann.', back:'ISO 26000, SDG (Sustainable Development Goals der UN), DNK (Deutscher Nachhaltigkeitskodex).'},
+  {topic:'csr', label:'CSR', front:'Wofür steht SDG und wie viele Ziele umfassen sie?', back:'Sustainable Development Goals der UN – 17 Ziele für eine nachhaltige Entwicklung.'},
+  {topic:'csr', label:'CSR', front:'Seit wann gelten die SDG und bis wann sollen sie erreicht werden?', back:'Seit 2016 in Kraft, sollen bis 2030 erreicht werden (Agenda 2030).'},
+  {topic:'csr', label:'CSR', front:'Was ist das Leitprinzip der SDG?', back:'"Niemanden zurücklassen."'},
+  {topic:'csr', label:'CSR', front:'Nenne die 5 Schritte des SDG-Kompasses.', back:'SDG verstehen → Prioritäten setzen → Ziele setzen → Integrieren → Kommunikation und Bericht (Kreislauf).'},
+  {topic:'csr', label:'CSR', front:'Worauf basiert das CSR-RUG (2017)?', back:'Auf der EU-Richtlinie NFRD (Non Financial Reporting Directive, 2014).'},
+  {topic:'csr', label:'CSR', front:'Ab wie vielen Mitarbeitenden gilt das CSR-RUG?', back:'Ab 500 Mitarbeitenden.'},
+  {topic:'csr', label:'CSR', front:'Was verpflichtet das Lieferkettengesetz (seit 2023, ab 1.000 MA)?', back:'Unternehmen müssen die Lieferkette auf Menschenrechts- und Umweltstandards hin sicherstellen.'},
+  {topic:'csr', label:'CSR', front:'Welche Kriterien entscheiden über die CSRD-Berichtspflicht ab 2024?', back:'2 von 3 Kriterien: 250 Mitarbeitende, 40 Mio. € Jahresumsatz, 20 Mio. € Bilanzsumme.'},
+  {topic:'csr', label:'CSR', front:'Wer prüft den Nachhaltigkeitsbericht nach CSRD?', back:'Unabhängige Prüfer (Wirtschaftsprüfer); der Bericht muss zudem öffentlich zugänglich sein.'},
+  {topic:'csr', label:'CSR', front:'Was droht bei Nichteinhaltung der Berichtspflicht?', back:'Geldstrafe, Strafverfahren, Ausschluss von öffentlichen Ausschreibungen, negatives Image (Shitstorm).'},
+  {topic:'csr', label:'CSR', front:'Nenne die allgemeinen ESRS-Standards.', back:'ESRS 1 (Allgemeine Anforderungen) und ESRS 2 (Allgemeine Angaben) – gelten für alle Unternehmen.'},
+  {topic:'csr', label:'CSR', front:'Welcher ESRS-Umweltstandard muss immer behandelt werden?', back:'E1 – Klimawandel (Pflichtthema).'},
+  {topic:'csr', label:'CSR', front:'Nenne die 5 umweltbezogenen ESRS-Standards.', back:'E1 Klimawandel, E2 Verschmutzung, E3 Wasser und Meeresressourcen, E4 Biodiversität/Ökosystem, E5 Kreislaufwirtschaft.'},
+  {topic:'csr', label:'CSR', front:'Nenne die 4 sozialbezogenen ESRS-Standards.', back:'S1 Eigene Belegschaft, S2 Arbeiter in der Wertschöpfungskette, S3 Betroffene Gemeinschaften, S4 Verbraucher und Endnutzer.'},
+  {topic:'csr', label:'CSR', front:'Was beschreibt die "doppelte Wesentlichkeit"?', back:'Zwei Dimensionen – Wesentlichkeit auf die Auswirkungen (Inside-Out) und finanzielle Wesentlichkeit (Outside-In); ein Thema ist wesentlich, wenn eine der beiden Dimensionen als wesentlich eingestuft wird.'},
+  {topic:'csr', label:'CSR', front:'Was umfasst Scope 1?', back:'Direkte Emissionen eines Unternehmens (z. B. Diesel, Methan).'},
+  {topic:'csr', label:'CSR', front:'Was umfasst Scope 2?', back:'Emissionen aus zugekaufter Energie (z. B. Strom).'},
+  {topic:'csr', label:'CSR', front:'Was umfasst Scope 3?', back:'Indirekte Emissionen entlang der Wertschöpfungskette (z. B. Kältemittel, vor-/nachgelagerte Prozesse).'},
+  {topic:'csr', label:'CSR', front:'Wie lautet die Formel für CO2e?', back:'CO2e = Verbrauch × Emissionsfaktor.'},
+  {topic:'csr', label:'CSR', front:'Nenne die 3 Terminierungs-Kategorien für Nachhaltigkeitsziele.', back:'Kurzfristig (1 Jahr), mittelfristig (1–5 Jahre), langfristig (länger als 5 Jahre).'},
+  {topic:'csr', label:'CSR', front:'Nenne zwei Vorteile von CSR für ein Unternehmen.', back:'Z. B. positive Kultur, Innovation, Wettbewerbsfähigkeit, besseres Image, gutes Mitarbeiter-Image (auch: eventuelle Gewinne durch Einsparungen).'},
+  {topic:'csr', label:'CSR', front:'Nenne zwei Nachteile von CSR für ein Unternehmen.', back:'Z. B. hoher Aufwand (personell, administrativ, Messdatenerhebung), Kosten, Risiko des Greenwashing-Vorwurfs.'},
+  {topic:'csr', label:'CSR', front:'Was ist der aktuelle Trend bei der EU-Berichtsrichtlinie?', back:'Die NFRD wurde durch die CSRD (Corporate Sustainability Reporting Directive) abgelöst.'},
 ];
 
 // ---------- Karten-Level (Leitner-System, 6 Level, Start bei 2) ----------
@@ -710,6 +773,7 @@ const TOPICS = [
   {key:'digital', label:'Digitalisierung & KI'},
   {key:'prompting', label:'Prompting & GPT'},
   {key:'pmi', label:'PMI – Projektmanagement'},
+  {key:'csr', label:'CSR'},
 ];
 
 topicChecksBox.innerHTML = TOPICS.map(t =>
