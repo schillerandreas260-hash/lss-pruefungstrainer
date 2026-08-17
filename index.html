@@ -143,7 +143,7 @@
 <body>
 <div class="wrap">
   <h1>🎓 LSS Prüfungstrainer</h1>
-  <div class="subtitle">Change Leadership · Design Thinking · Digitalisierung &amp; KI · Prompting &amp; GPT · PMI Projektmanagement · CSR</div>
+  <div class="subtitle">Change Leadership · Design Thinking · Digitalisierung &amp; KI · Prompting &amp; GPT · PMI Projektmanagement · CSR · Business Management</div>
 
   <!-- START SCREEN -->
   <div class="card" id="screen-start">
@@ -450,6 +450,37 @@ const QUESTIONS = [
   {topic:'csr', label:'CSR', q:'Welche Emissionen umfasst Scope 2?', options:['Direkte Emissionen eines Unternehmens','Emissionen aus zugekaufter Energie','Indirekte Emissionen entlang der Wertschöpfungskette','Emissionen aus dem Fuhrpark'], correct:1},
   {topic:'csr', label:'CSR', q:'Wie lautet die Formel zur Berechnung von CO2e?', options:['CO2e = Verbrauch × Emissionsfaktor','CO2e = Verbrauch / Emissionsfaktor','CO2e = Emissionsfaktor − Verbrauch','CO2e = Verbrauch + Emissionsfaktor'], correct:0},
   {topic:'csr', label:'CSR', q:'Welche Terminierung gilt laut Training für "mittelfristige" Ziele?', options:['1 Jahr','1–5 Jahre','5–10 Jahre','länger als 10 Jahre'], correct:1},
+
+  {topic:'bizmgmt', label:'Business Management', q:'Was bedeutet MBO im Kontext der Business-Manager-Rollen?', options:['Management by Objectives','Master of Business Optimization','Marketing Business Officer','Multi Business Organization'], correct:1},
+  {topic:'bizmgmt', label:'Business Management', q:'Was bedeutet BDM?', options:['Business Development Manager','Business Design Model','Balanced Development Matrix','Business Documentation Manager'], correct:0},
+  {topic:'bizmgmt', label:'Business Management', q:'Was ist der Fokus des OpEx Managers?', options:['Entwicklung neuer Geschäftsfelder','Effiziente Abläufe entlang der Wertschöpfungskette','Rekrutierung neuer Mitarbeiter','Erstellung des Jahresabschlusses'], correct:1},
+  {topic:'bizmgmt', label:'Business Management', q:'Welche Methoden werden dem BDM zugeordnet?', options:['Lean Management','SCRUM, DFSS, PMI','Nur Lean Six Sigma','Nur AGG'], correct:1},
+  {topic:'bizmgmt', label:'Business Management', q:'Was beschreibt die Vision eines Unternehmens?', options:['Wofür stehen wir?','Wohin wollen wir? Was wollen wir in der Zukunft erreichen?','Wie setzen wir die Strategie um?','Welche Gesetze gelten für uns?'], correct:1},
+  {topic:'bizmgmt', label:'Business Management', q:'Was beschreibt die Mission eines Unternehmens?', options:['Wohin wollen wir?','Wofür stehen wir? (Werte, Kultur, Überzeugungen)','Wie hoch ist unser Umsatz?','Welche Konkurrenten haben wir?'], correct:1},
+  {topic:'bizmgmt', label:'Business Management', q:'Wie oft sollte laut Training das Top Management die Zieldefinition kommunizieren?', options:['1× pro Tag','1× pro Woche','1× pro Monat','1× pro Jahr'], correct:2},
+  {topic:'bizmgmt', label:'Business Management', q:'Wie oft sollte laut Training das Lower Management (Team-/Gruppenleitung) kommunizieren?', options:['1× pro Tag','1× pro Woche','1× pro Monat','1× pro Quartal'], correct:1},
+  {topic:'bizmgmt', label:'Business Management', q:'Wer sagt uns laut Training, dass Handlungsbedarf besteht?', options:['Ausschließlich das Top Management','Gemba – der Ort des Geschehens','Nur externe Berater','Der Jahresabschluss'], correct:1},
+  {topic:'bizmgmt', label:'Business Management', q:'Wofür steht VoC?', options:['Voice of Compliance','Voice of Customer','Voice of Contract','Value of Customer'], correct:1},
+  {topic:'bizmgmt', label:'Business Management', q:'Wofür steht VoE?', options:['Voice of Employee','Value of Efficiency','Voice of Environment','Voice of Excellence'], correct:0},
+  {topic:'bizmgmt', label:'Business Management', q:'Welches Tool wird speziell dem OpEx-Ansatz zur Identifikation von Handlungsbedarf zugeordnet?', options:['Wertstromdiagramm (VSM)','SWOT-Analyse','BCG-Matrix','AGG'], correct:0},
+  {topic:'bizmgmt', label:'Business Management', q:'Welche vier Schritte umfasst die Roadmap im strategischen Management?', options:['Handlungsbedarf erkennen, Maßnahmen planen, Maßnahmen umsetzen, Steuern/Controlling','Planen, Testen, Freigeben, Archivieren','Recruiting, Onboarding, Developing, Retention','Identifizieren, Bewerten, Steuern, Dokumentieren'], correct:0},
+  {topic:'bizmgmt', label:'Business Management', q:'Welche Analysen werden dem Schritt "Handlungsbedarf erkennen" zugeordnet?', options:['Ansoff-Matrix und Porter-Strategie','SWOT-, PEST- und GAP-Analyse','BCG-Matrix und Blue-Ocean-Strategie','EVM und PDCA'], correct:1},
+  {topic:'bizmgmt', label:'Business Management', q:'Wofür stehen die vier Felder der SWOT-Analyse?', options:['Strengths, Weaknesses, Opportunities, Threats','Strategy, Work, Organisation, Team','Sales, Warehouse, Operations, Talent','Structure, Workflow, Ownership, Timing'], correct:0},
+  {topic:'bizmgmt', label:'Business Management', q:'Wofür steht das "P" in der PEST-Analyse?', options:['Personal','Political','Process','Product'], correct:1},
+  {topic:'bizmgmt', label:'Business Management', q:'Welche Wachstumsstrategie ergibt sich in der Ansoff-Matrix aus "neuer Markt + vorhandenes Produkt"?', options:['Marktdurchdringung','Marktentwicklung','Produktentwicklung','Diversifikation'], correct:1},
+  {topic:'bizmgmt', label:'Business Management', q:'Welche Wachstumsstrategie ergibt sich in der Ansoff-Matrix aus "neuer Markt + neues Produkt"?', options:['Marktdurchdringung','Produktentwicklung','Diversifikation','Marktentwicklung'], correct:2},
+  {topic:'bizmgmt', label:'Business Management', q:'Welches Unternehmen wird im Training als Beispiel für Kostenführerschaft genannt?', options:['Mercedes','Apple','Ryanair','Rolex'], correct:2},
+  {topic:'bizmgmt', label:'Business Management', q:'Welches Unternehmen wird im Training als Beispiel für Qualitätsführerschaft genannt?', options:['Mercedes','Ryanair','Rolex','Yamaha'], correct:0},
+  {topic:'bizmgmt', label:'Business Management', q:'Wofür steht "Star-Produkt" in der BCG-Matrix?', options:['Hoher Marktanteil, niedriges Marktwachstum','Hoher Marktanteil, hohes Marktwachstum','Niedriger Marktanteil, niedriges Marktwachstum','Niedriger Marktanteil, hohes Marktwachstum'], correct:1},
+  {topic:'bizmgmt', label:'Business Management', q:'Wie wird ein "Poor Dog" in der BCG-Matrix auch bezeichnet?', options:['Cash Cow','Question Mark','Problem-Produkt, das ausläuft','Star-Produkt'], correct:2},
+  {topic:'bizmgmt', label:'Business Management', q:'Was charakterisiert die Blue Ocean Strategy?', options:['Eintauchen in einen bestehenden, umkämpften Markt','Eintauchen in einen neuen, unberührten Markt','Ausschließlich Kostenführerschaft','Fokussierung auf bestehende Kunden'], correct:1},
+  {topic:'bizmgmt', label:'Business Management', q:'Was charakterisiert die Red Ocean Strategy?', options:['Ein komplett neuer, unberührter Markt','Ein "Haifischbecken" – Wettbewerb in einem bestehenden Markt','Nischenstrategie ohne Wettbewerber','Ausschließlich Produktentwicklung'], correct:1},
+  {topic:'bizmgmt', label:'Business Management', q:'Wofür steht HR?', options:['Human Resource (Management)/Personalmanagement','Human Relations only','High Responsibility','Human Requirement'], correct:0},
+  {topic:'bizmgmt', label:'Business Management', q:'In welcher Reihenfolge verläuft der Mitarbeiterlebenszyklus laut Training?', options:['Onboarding → Attraction → Recruiting → Developing → Retention → Offboarding → Alumni','Attraction → Recruiting → Onboarding → Developing → Retention → Offboarding → Alumni','Recruiting → Attraction → Developing → Onboarding → Alumni → Retention → Offboarding','Developing → Retention → Attraction → Recruiting → Onboarding → Offboarding → Alumni'], correct:1},
+  {topic:'bizmgmt', label:'Business Management', q:'Was schützt das Allgemeine Gleichbehandlungsgesetz (AGG)?', options:['Nur vor Diskriminierung aufgrund des Geschlechts','Vor Benachteiligung aufgrund von Rasse, Geschlecht, Religion, Alter, sexueller Orientierung','Ausschließlich vor Diskriminierung im Recruiting-Prozess','Nur Mitarbeitende über 50 Jahre'], correct:1},
+  {topic:'bizmgmt', label:'Business Management', q:'Was ist der Unterschied zwischen aktiver und passiver Personalbeschaffung?', options:['Aktiv = Initiativbewerbung; Passiv = Stellenausschreibung','Aktiv = Stellenausschreibungen/Headhunter; Passiv = Initiativbewerbung','Es gibt keinen Unterschied','Aktiv bezieht sich nur auf interne Beförderungen'], correct:1},
+  {topic:'bizmgmt', label:'Business Management', q:'Nenne die 6 Schritte des Zyklus der Personalentwicklung.', options:['Bedarfsanalyse, Zielplanung, Maßnahmeplanung, Durchführung, Erfolgskontrolle, Transfersicherung','Recruiting, Onboarding, Developing, Retention, Offboarding, Alumni','Plan, Do, Check, Act, Review, Close','Identifizieren, Bewerten, Planen, Umsetzen, Steuern, Abschließen'], correct:0},
+  {topic:'bizmgmt', label:'Business Management', q:'Was wird laut Training statt "Defizitanalyse" als besserer Begriff vorgeschlagen?', options:['Fehleranalyse','Optimierungspotential','Schwachstellenbericht','Risikoanalyse'], correct:1},
 ];
 
 // ---------- Lernkarten ----------
@@ -673,6 +704,45 @@ const FLASHCARDS = [
   {topic:'csr', label:'CSR', front:'Nenne zwei Vorteile von CSR für ein Unternehmen.', back:'Z. B. positive Kultur, Innovation, Wettbewerbsfähigkeit, besseres Image, gutes Mitarbeiter-Image (auch: eventuelle Gewinne durch Einsparungen).'},
   {topic:'csr', label:'CSR', front:'Nenne zwei Nachteile von CSR für ein Unternehmen.', back:'Z. B. hoher Aufwand (personell, administrativ, Messdatenerhebung), Kosten, Risiko des Greenwashing-Vorwurfs.'},
   {topic:'csr', label:'CSR', front:'Was ist der aktuelle Trend bei der EU-Berichtsrichtlinie?', back:'Die NFRD wurde durch die CSRD (Corporate Sustainability Reporting Directive) abgelöst.'},
+
+  {topic:'bizmgmt', label:'Business Management', front:'Wofür steht MBO (Business-Manager-Rolle)?', back:'Master of Business Optimization – führt Optimierungen in allen Abteilungen der Organisation durch (Methode: Lean Six Sigma).'},
+  {topic:'bizmgmt', label:'Business Management', front:'Wofür steht BDM?', back:'Business Development Manager – entwickelt Geschäftsfelder (Methoden: SCRUM/Agil, DFSS, PMI).'},
+  {topic:'bizmgmt', label:'Business Management', front:'Was ist der Fokus des OpEx Managers?', back:'Effiziente Abläufe entlang der Wertschöpfungskette (Operational Excellence, Methode: Lean Management).'},
+  {topic:'bizmgmt', label:'Business Management', front:'Was ist die Vision eines Unternehmens?', back:'Wohin wollen wir? Was wollen wir in der Zukunft erreichen?'},
+  {topic:'bizmgmt', label:'Business Management', front:'Was ist die Mission eines Unternehmens?', back:'Wofür stehen wir? (Werte, Kultur, Überzeugungen)'},
+  {topic:'bizmgmt', label:'Business Management', front:'Was ist die Strategie eines Unternehmens?', back:'Wie können wir die Vision im Einklang mit der Mission umsetzen?'},
+  {topic:'bizmgmt', label:'Business Management', front:'Wie oft kommuniziert das Top Management laut Training die Zieldefinition?', back:'1× pro Monat.'},
+  {topic:'bizmgmt', label:'Business Management', front:'Wie oft kommuniziert das Lower Management (Team-/Gruppenleitung)?', back:'1× pro Woche.'},
+  {topic:'bizmgmt', label:'Business Management', front:'Wie oft kommunizieren die "People" (operative Ebene)?', back:'1× pro Tag.'},
+  {topic:'bizmgmt', label:'Business Management', front:'Wer sagt uns, dass Handlungsbedarf besteht?', back:'Gemba – man geht an den Ort des Geschehens.'},
+  {topic:'bizmgmt', label:'Business Management', front:'Welche "Voices" nutzt der BDM zur Identifikation von Handlungsbedarf?', back:'Voice of Customer (VoC), Voice of Business (VoB).'},
+  {topic:'bizmgmt', label:'Business Management', front:'Welche "Voices" nutzt der MBO?', back:'VoC, VoB, Voice of Employee (VoE), Voice of Process (VoP).'},
+  {topic:'bizmgmt', label:'Business Management', front:'Welche "Voices"/Tools nutzt der OpEx-Ansatz?', back:'VoC, VoB, VoE sowie das Wertstromdiagramm (VSM – Value Stream Map).'},
+  {topic:'bizmgmt', label:'Business Management', front:'Nenne die 4 Schritte der Roadmap im strategischen Management.', back:'Handlungsbedarf erkennen → Maßnahmen planen → Maßnahmen umsetzen → Steuern/Controlling.'},
+  {topic:'bizmgmt', label:'Business Management', front:'Welche Analysen gehören zum Schritt "Handlungsbedarf erkennen"?', back:'SWOT-Analyse, PEST-Analyse, GAP-Analyse.'},
+  {topic:'bizmgmt', label:'Business Management', front:'Wofür stehen die 4 Felder der SWOT-Analyse?', back:'Strengths (Stärken), Weaknesses (Schwächen), Opportunities (Chancen), Threats (Risiken).'},
+  {topic:'bizmgmt', label:'Business Management', front:'Wofür steht PEST (bzw. PESTLE)?', back:'Political, Economical, Social, Technological (erweitert um Legal und Environment).'},
+  {topic:'bizmgmt', label:'Business Management', front:'Was zeigt die Produkt-Markt-Matrix (Ansoff-Matrix)?', back:'Vier Wachstumsstrategien je nach Kombination aus vorhandenem/neuem Produkt und vorhandenem/neuem Markt: Marktdurchdringung, Produktentwicklung, Marktentwicklung, Diversifikation.'},
+  {topic:'bizmgmt', label:'Business Management', front:'Welche Wachstumsstrategie entsteht aus "vorhandenes Produkt + neuer Markt"?', back:'Marktentwicklung.'},
+  {topic:'bizmgmt', label:'Business Management', front:'Welche Wachstumsstrategie entsteht aus "neues Produkt + neuer Markt"?', back:'Diversifikation.'},
+  {topic:'bizmgmt', label:'Business Management', front:'Nenne die drei Arten der Diversifikation.', back:'Horizontale (ähnliche Produkte), vertikale (Erweiterung der Wertschöpfung), laterale Diversifikation (komplett neue Produkte).'},
+  {topic:'bizmgmt', label:'Business Management', front:'Welche vier Wettbewerbsstrategien werden im Training genannt (mit Beispiel)?', back:'Kostenführerschaft (Ryanair), Qualitätsführerschaft (Mercedes), Technologieführerschaft (Apple), Nischenstrategie (Rolex).'},
+  {topic:'bizmgmt', label:'Business Management', front:'Was zeigen die zwei Achsen der Wettbewerbsstrategie nach Porter?', back:'Wettbewerbsbreite (Gesamtmarkt vs. Teilmarkt) und strategischer Vorteil (Einzigartigkeit vs. Kostenvorsprung).'},
+  {topic:'bizmgmt', label:'Business Management', front:'Was ist ein "Star-Produkt" in der BCG-Matrix?', back:'Ein Produkt mit hohem relativem Marktanteil und hohem Marktwachstum.'},
+  {topic:'bizmgmt', label:'Business Management', front:'Was ist ein "Cash-Produkt" (Cash Cow) in der BCG-Matrix?', back:'Ein Produkt mit hohem relativem Marktanteil, aber niedrigem Marktwachstum.'},
+  {topic:'bizmgmt', label:'Business Management', front:'Was ist ein "Poor Dog" (Problem-Produkt) in der BCG-Matrix?', back:'Ein Produkt mit niedrigem Marktanteil und niedrigem Marktwachstum – läuft aus.'},
+  {topic:'bizmgmt', label:'Business Management', front:'Was unterscheidet Blue Ocean von Red Ocean Strategy?', back:'Blue Ocean = neuer, unberührter Markt ("neue Welt"). Red Ocean = bestehender, umkämpfter Markt ("Haifischbecken").'},
+  {topic:'bizmgmt', label:'Business Management', front:'Wofür steht HR?', back:'Human Resource (Management) / Personalmanagement.'},
+  {topic:'bizmgmt', label:'Business Management', front:'Was ist laut Training das "Warum" von HR?', back:'Den richtigen Mitarbeiter, zur richtigen Zeit, am richtigen Ort, mit der richtigen Qualifikation, in ausreichender Anzahl.'},
+  {topic:'bizmgmt', label:'Business Management', front:'Nenne die Stationen des Mitarbeiterlebenszyklus in der richtigen Reihenfolge.', back:'Attraction → Recruiting → Onboarding → Developing → Retention → Offboarding → Alumni.'},
+  {topic:'bizmgmt', label:'Business Management', front:'Was umfasst internes Personalmarketing?', back:'Z. B. MA werben MA, Work-Life-Balance, Förderung, Weiterentwicklung, Incentives, Gehalt.'},
+  {topic:'bizmgmt', label:'Business Management', front:'Was umfasst externes Personalmarketing?', back:'Z. B. Social Media, Homepage, Stellenausschreibungen, Bewertungsportale (z. B. Kununu), Jobmessen, Recruitings.'},
+  {topic:'bizmgmt', label:'Business Management', front:'Nenne die Schritte der Personalbeschaffung.', back:'Bedarfsidentifizierung → Anforderungsanalyse → Recruiting → Vorauswahl → Auswahl → Einstellung.'},
+  {topic:'bizmgmt', label:'Business Management', front:'Was unterscheidet aktive von passiver Personalbeschaffung?', back:'Aktiv = Stellenausschreibungen, Jobbörsen, Headhunter. Passiv = Initiativbewerbung.'},
+  {topic:'bizmgmt', label:'Business Management', front:'Wofür steht AGG und was schützt es?', back:'Allgemeines Gleichbehandlungsgesetz (Antidiskriminierungsgesetz) – schützt vor Benachteiligung aufgrund von Rasse, Geschlecht, Religion, Alter, sexueller Orientierung.'},
+  {topic:'bizmgmt', label:'Business Management', front:'Nenne die 6 Schritte des Zyklus der Personalentwicklung.', back:'Bedarfsanalyse → Zielplanung → Maßnahmeplanung → Durchführung → Erfolgskontrolle → Transfersicherung.'},
+  {topic:'bizmgmt', label:'Business Management', front:'Was umfasst die Bedarfsplanungsanalyse?', back:'Organisationsanalyse (Strategie/Ziele) → Anforderungsanalyse (Leistungsanforderungen) → Personalanalyse (Leistungsbeurteilung, Potentialanalyse).'},
+  {topic:'bizmgmt', label:'Business Management', front:'Welcher Begriff wird statt "Defizitanalyse" empfohlen?', back:'"Optimierungspotential".'},
 ];
 
 // ---------- Karten-Level (Leitner-System, 6 Level, Start bei 2) ----------
@@ -774,6 +844,7 @@ const TOPICS = [
   {key:'prompting', label:'Prompting & GPT'},
   {key:'pmi', label:'PMI – Projektmanagement'},
   {key:'csr', label:'CSR'},
+  {key:'bizmgmt', label:'Business Management'},
 ];
 
 topicChecksBox.innerHTML = TOPICS.map(t =>
