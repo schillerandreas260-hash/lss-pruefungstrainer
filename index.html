@@ -208,6 +208,7 @@
   .sync-status{font-size:0.78rem; color:var(--muted); margin-top:6px; min-height:1.1em;}
   .sync-banner{background:var(--accent2); color:white; border-radius:10px; padding:10px 14px; margin-top:10px; font-size:0.85rem; display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;}
   .sync-banner button{width:auto; padding:6px 12px; font-size:0.78rem; background:white; color:var(--accent2); font-weight:700;}
+  .sync-banner button.keep{background:transparent; color:white; border:1px solid white;}
   .sync-banner.hidden{display:none;}
 </style>
 </head>
@@ -234,7 +235,10 @@
       <div class="sync-status" id="syncStatus">Beim ersten Anmelden mit einem Benutzernamen wird automatisch ein neues Konto angelegt.</div>
       <div class="sync-banner hidden" id="syncBanner">
         <span id="syncBannerText"></span>
-        <button type="button" id="syncBannerApplyBtn">Übernehmen</button>
+        <div style="display:flex; gap:8px;">
+          <button type="button" id="syncBannerApplyBtn">Server-Stand übernehmen</button>
+          <button type="button" id="syncBannerKeepBtn" class="keep">Lokalen Stand behalten</button>
+        </div>
       </div>
     </fieldset>
 
@@ -3451,6 +3455,8 @@ const syncStatus = document.getElementById('syncStatus');
 const syncBanner = document.getElementById('syncBanner');
 const syncBannerText = document.getElementById('syncBannerText');
 const syncBannerApplyBtn = document.getElementById('syncBannerApplyBtn');
+const syncBannerKeepBtn = document.getElementById('syncBannerKeepBtn');
+let syncReadyToPush = false; // erst true, sobald Konflikte geklärt sind - verhindert versehentliches Überschreiben
 
 function getSyncCreds(){
   const u = localStorage.getItem('lss_sync_user') || '';
@@ -3483,9 +3489,15 @@ function applyProgressData(data){
 }
 
 let syncPushTimer = null;
+function hasLocalProgress(){
+  return SYNC_PROGRESS_KEYS.some(k => {
+    const v = localStorage.getItem(k);
+    return v && v !== '{}' && v !== '[]';
+  });
+}
 function bumpLocalUpdatedAt(){
   localStorage.setItem('lss_local_updated_at', String(Date.now()));
-  if(getSyncCreds()){
+  if(getSyncCreds() && syncReadyToPush){
     clearTimeout(syncPushTimer);
     syncPushTimer = setTimeout(() => syncSave(false), 2500);
   }
@@ -3517,33 +3529,6 @@ function updateSyncUiLoggedIn(loggedIn){
   syncLoginBtn.textContent = loggedIn ? '🔑 Erneut anmelden' : '🔑 Anmelden / Registrieren';
 }
 
-async function syncLogin(){
-  const username = syncUserInput.value.trim();
-  const password = syncPassInput.value;
-  if(!username || !password){ setSyncStatus('❌ Bitte Benutzername und Passwort eingeben.'); return; }
-  setSyncStatus('⏳ Verbinde…');
-  try{
-    const result = await callSyncRpc('lss_auth', {p_username: username, p_password: password});
-    setSyncCreds(username, password);
-    updateSyncUiLoggedIn(true);
-    const remote = result && result.data;
-    if(result.status === 'created' || !remote || Object.keys(remote).length <= 1){
-      setSyncStatus(`✅ Angemeldet als "${username}" (neues Konto angelegt).`);
-      syncSave(true);
-    } else {
-      const remoteTs = remote.local_updated_at || 0;
-      if(remoteTs > getLocalUpdatedAt()){
-        showSyncBanner(remote, result.updated_at);
-        setSyncStatus(`✅ Angemeldet als "${username}".`);
-      } else {
-        setSyncStatus(`✅ Angemeldet als "${username}" – lokaler Stand ist aktuell.`);
-      }
-    }
-  } catch(e){
-    setSyncStatus('❌ ' + (e.message === 'invalid_password' ? 'Falsches Passwort für diesen Benutzernamen.' : 'Fehler: ' + e.message));
-  }
-}
-
 async function syncSave(manual){
   const creds = getSyncCreds();
   if(!creds){ if(manual) setSyncStatus('❌ Bitte zuerst anmelden.'); return; }
@@ -3557,20 +3542,72 @@ async function syncSave(manual){
 
 function showSyncBanner(remoteData, updatedAtIso){
   const when = updatedAtIso ? new Date(updatedAtIso).toLocaleString('de-DE') : '';
-  syncBannerText.textContent = `Neuerer Lernstand von einem anderen Gerät gefunden${when ? ' (' + when + ')' : ''}.`;
+  syncBannerText.textContent = `Unterschiedlicher Lernstand erkannt (Server-Stand vom ${when}). Welchen Stand möchtest du behalten?`;
   syncBanner.classList.remove('hidden');
   syncBannerApplyBtn.onclick = () => {
     applyProgressData(remoteData);
     syncBanner.classList.add('hidden');
-    setSyncStatus('✅ Übernommen – Seite wird neu geladen…');
+    syncReadyToPush = true;
+    setSyncStatus('✅ Server-Stand übernommen – Seite wird neu geladen…');
     location.reload();
   };
+  syncBannerKeepBtn.onclick = () => {
+    syncBanner.classList.add('hidden');
+    syncReadyToPush = true;
+    setSyncStatus('⏳ Lokaler Stand wird als neuer Server-Stand hochgeladen…');
+    syncSave(true);
+  };
+}
+
+// Zentrale Entscheidungslogik: wird sowohl beim Login als auch beim automatischen
+// Check auf Seiten-Ladevorgang verwendet, damit nie versehentlich Fortschritt verloren geht.
+function resolveIncomingRemote(remote, updatedAtIso, usernameForStatus){
+  if(!remote || Object.keys(remote).length <= 1){
+    // Server hat noch keinen echten Stand -> lokalen Stand hochladen
+    syncReadyToPush = true;
+    syncSave(true);
+    setSyncStatus(`✅ Angemeldet als "${usernameForStatus}" (lokaler Stand hochgeladen).`);
+    return;
+  }
+  const remoteTs = remote.local_updated_at || 0;
+  const localTs = getLocalUpdatedAt();
+  if(!hasLocalProgress()){
+    // Dieses Gerät hat noch keinen eigenen Fortschritt -> Server-Stand einfach übernehmen, kein Risiko
+    applyProgressData(remote);
+    syncReadyToPush = true;
+    setSyncStatus('✅ Lernstand vom Server übernommen – Seite wird neu geladen…');
+    location.reload();
+    return;
+  }
+  if(remoteTs > localTs){
+    showSyncBanner(remote, updatedAtIso);
+    setSyncStatus(`✅ Angemeldet als "${usernameForStatus}" – bitte Konflikt oben klären.`);
+  } else {
+    syncReadyToPush = true;
+    setSyncStatus(`✅ Angemeldet als "${usernameForStatus}" – lokaler Stand ist aktuell.`);
+  }
+}
+
+async function syncLogin(){
+  const username = syncUserInput.value.trim();
+  const password = syncPassInput.value;
+  if(!username || !password){ setSyncStatus('❌ Bitte Benutzername und Passwort eingeben.'); return; }
+  setSyncStatus('⏳ Verbinde…');
+  try{
+    const result = await callSyncRpc('lss_auth', {p_username: username, p_password: password});
+    setSyncCreds(username, password);
+    updateSyncUiLoggedIn(true);
+    resolveIncomingRemote(result && result.data, result.updated_at, username);
+  } catch(e){
+    setSyncStatus('❌ ' + (e.message === 'invalid_password' ? 'Falsches Passwort für diesen Benutzernamen.' : 'Fehler: ' + e.message));
+  }
 }
 
 syncLoginBtn.addEventListener('click', syncLogin);
 syncUploadBtn.addEventListener('click', () => syncSave(true));
 syncLogoutBtn.addEventListener('click', () => {
   clearSyncCreds();
+  syncReadyToPush = false;
   updateSyncUiLoggedIn(false);
   syncBanner.classList.add('hidden');
   setSyncStatus('Abgemeldet. Lokaler Lernstand bleibt erhalten.');
@@ -3584,11 +3621,7 @@ syncLogoutBtn.addEventListener('click', () => {
   updateSyncUiLoggedIn(true);
   setSyncStatus(`Angemeldet als "${creds.username}". Prüfe auf neueren Stand…`);
   callSyncRpc('lss_auth', {p_username: creds.username, p_password: creds.password}).then(result => {
-    const remote = result && result.data;
-    if(remote && (remote.local_updated_at || 0) > getLocalUpdatedAt()){
-      showSyncBanner(remote, result.updated_at);
-    }
-    setSyncStatus(`Angemeldet als "${creds.username}".`);
+    resolveIncomingRemote(result && result.data, result.updated_at, creds.username);
   }).catch(e => {
     setSyncStatus('❌ Sync-Login fehlgeschlagen: ' + (e.message === 'invalid_password' ? 'Passwort falsch/geändert.' : e.message));
   });
