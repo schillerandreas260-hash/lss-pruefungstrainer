@@ -202,6 +202,13 @@
   .topic-exam-optional{color:var(--muted);}
   .topic-legend{font-size:0.8rem; color:var(--muted); margin:6px 0 10px 0;}
   .topic-legend .topic-exam-relevant{margin-right:14px;}
+  .sync-row{display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;}
+  .sync-row input{flex:1; min-width:140px; padding:9px 12px; border-radius:8px; border:1px solid var(--border); background:var(--card2); color:var(--text); font-size:0.85rem;}
+  .sync-row button{width:auto; padding:8px 14px; font-size:0.82rem;}
+  .sync-status{font-size:0.78rem; color:var(--muted); margin-top:6px; min-height:1.1em;}
+  .sync-banner{background:var(--accent2); color:white; border-radius:10px; padding:10px 14px; margin-top:10px; font-size:0.85rem; display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;}
+  .sync-banner button{width:auto; padding:6px 12px; font-size:0.78rem; background:white; color:var(--accent2); font-weight:700;}
+  .sync-banner.hidden{display:none;}
 </style>
 </head>
 <body>
@@ -213,6 +220,24 @@
 
   <!-- START SCREEN -->
   <div class="card" id="screen-start">
+    <fieldset>
+      <legend>☁️ Geräteübergreifender Sync</legend>
+      <div class="sync-row">
+        <input type="text" id="syncUserInput" placeholder="Benutzername (frei wählbar)" autocomplete="username">
+        <input type="password" id="syncPassInput" placeholder="Passwort (frei wählbar)" autocomplete="current-password">
+      </div>
+      <div class="sync-row">
+        <button type="button" class="secondary" id="syncLoginBtn">🔑 Anmelden / Registrieren</button>
+        <button type="button" class="secondary hidden" id="syncUploadBtn">⬆️ Jetzt hochladen</button>
+        <button type="button" class="secondary hidden" id="syncLogoutBtn">Abmelden</button>
+      </div>
+      <div class="sync-status" id="syncStatus">Beim ersten Anmelden mit einem Benutzernamen wird automatisch ein neues Konto angelegt.</div>
+      <div class="sync-banner hidden" id="syncBanner">
+        <span id="syncBannerText"></span>
+        <button type="button" id="syncBannerApplyBtn">Übernehmen</button>
+      </div>
+    </fieldset>
+
     <div class="mode-toggle">
       <div class="mode-btn active" id="modeMcBtn" data-mode="mc">📝 Multiple-Choice-Test</div>
       <div class="mode-btn" id="modeFcBtn" data-mode="fc">🃏 Lernkarten</div>
@@ -2571,6 +2596,7 @@ function setCardLevel(card, level){
   const idx = FLASHCARDS.indexOf(card);
   fcLevels[idx] = level;
   localStorage.setItem('lss_fc_levels', JSON.stringify(fcLevels));
+  bumpLocalUpdatedAt();
 }
 
 // ---------- MC-Statistik (Gewichtung nach Trefferquote) ----------
@@ -2586,6 +2612,7 @@ function recordMcAnswer(qIdx, wasCorrect){
   if(!mcStats[qIdx]) mcStats[qIdx] = {correct:0, wrong:0};
   if(wasCorrect) mcStats[qIdx].correct++; else mcStats[qIdx].wrong++;
   localStorage.setItem('lss_mc_stats', JSON.stringify(mcStats));
+  bumpLocalUpdatedAt();
 }
 
 // ---------- MC-Ausschluss (Fragen dauerhaft nicht mehr abfragen) ----------
@@ -2599,6 +2626,7 @@ function isMcExcluded(qIdx){
 function setMcExcluded(qIdx, val){
   if(val) mcExcluded[qIdx] = true; else delete mcExcluded[qIdx];
   localStorage.setItem('lss_mc_excluded', JSON.stringify(mcExcluded));
+  bumpLocalUpdatedAt();
 }
 
 // Gewichtete Ziehung ohne Zurücklegen (Efraimidis-Spirakis): Wahrscheinlichkeit proportional zum Gewicht.
@@ -2649,17 +2677,20 @@ const savedFactor = localStorage.getItem('lss_mc_factor');
 if(savedFactor !== null) mcFactorInput.value = savedFactor;
 mcFactorInput.addEventListener('change', () => {
   localStorage.setItem('lss_mc_factor', mcFactorInput.value);
+  bumpLocalUpdatedAt();
 });
 resetMcStatsBtn.addEventListener('click', () => {
   if(confirm('MC-Statistik (Trefferquote je Frage) wirklich zurücksetzen? Alle Fragen werden danach wieder gleich häufig gezogen.')){
     mcStats = {};
     localStorage.removeItem('lss_mc_stats');
+    bumpLocalUpdatedAt();
   }
 });
 resetExcludedBtn.addEventListener('click', () => {
   if(confirm('Alle ausgeschlossenen Fragen wirklich zurücksetzen? Sie werden danach wieder abgefragt.')){
     mcExcluded = {};
     localStorage.removeItem('lss_mc_excluded');
+    bumpLocalUpdatedAt();
   }
 });
 
@@ -2827,6 +2858,7 @@ resetLevelsBtn.addEventListener('click', () => {
   if(confirm('Kartenfortschritt (alle Level) wirklich zurücksetzen? Alle Karten starten wieder bei Level 2.')){
     fcLevels = {};
     localStorage.removeItem('lss_fc_levels');
+    bumpLocalUpdatedAt();
     refreshStartScreen();
   }
 });
@@ -2908,6 +2940,7 @@ function saveHistoryEntry(entry){
   const h = loadHistory();
   h.unshift(entry);
   localStorage.setItem('lss_quiz_history', JSON.stringify(h.slice(0,20)));
+  bumpLocalUpdatedAt();
 }
 function renderHistory(){
   const h = loadHistory();
@@ -2922,6 +2955,7 @@ function renderHistory(){
 }
 clearHistoryBtn.addEventListener('click', () => {
   localStorage.removeItem('lss_quiz_history');
+  bumpLocalUpdatedAt();
   renderHistory();
 });
 renderHistory();
@@ -3402,6 +3436,163 @@ glossaryCloseBtn.addEventListener('click', closeGlossary);
 glossaryModal.addEventListener('click', (e) => { if(e.target === glossaryModal) closeGlossary(); });
 document.addEventListener('keydown', (e) => { if(e.key === 'Escape' && !glossaryModal.classList.contains('hidden')) closeGlossary(); });
 glossarySearch.addEventListener('input', () => renderGlossary(glossarySearch.value));
+
+// ---------- Geräteübergreifender Sync (Supabase, eigenes Konto: Benutzername + Passwort) ----------
+const SUPABASE_URL = 'https://theebtkghkjckfumwnil.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRoZWVidGtnaGtqY2tmdW13bmlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MDA1NTgsImV4cCI6MjEwNDM3NjU1OH0.tNPw-jTuy5UPRndKplM5luH0P0iC-8aCTew5mMVLeKo';
+const SYNC_PROGRESS_KEYS = ['lss_fc_levels', 'lss_mc_excluded', 'lss_mc_factor', 'lss_mc_stats', 'lss_quiz_history'];
+
+const syncUserInput = document.getElementById('syncUserInput');
+const syncPassInput = document.getElementById('syncPassInput');
+const syncLoginBtn = document.getElementById('syncLoginBtn');
+const syncUploadBtn = document.getElementById('syncUploadBtn');
+const syncLogoutBtn = document.getElementById('syncLogoutBtn');
+const syncStatus = document.getElementById('syncStatus');
+const syncBanner = document.getElementById('syncBanner');
+const syncBannerText = document.getElementById('syncBannerText');
+const syncBannerApplyBtn = document.getElementById('syncBannerApplyBtn');
+
+function getSyncCreds(){
+  const u = localStorage.getItem('lss_sync_user') || '';
+  const p = localStorage.getItem('lss_sync_pass') || '';
+  return (u && p) ? {username: u, password: p} : null;
+}
+function setSyncCreds(u, p){
+  localStorage.setItem('lss_sync_user', u);
+  localStorage.setItem('lss_sync_pass', p);
+}
+function clearSyncCreds(){
+  localStorage.removeItem('lss_sync_user');
+  localStorage.removeItem('lss_sync_pass');
+}
+function getLocalUpdatedAt(){
+  return parseInt(localStorage.getItem('lss_local_updated_at') || '0', 10);
+}
+function collectProgressData(){
+  const out = {local_updated_at: getLocalUpdatedAt()};
+  SYNC_PROGRESS_KEYS.forEach(k => { out[k] = localStorage.getItem(k); });
+  return out;
+}
+function applyProgressData(data){
+  if(!data) return;
+  SYNC_PROGRESS_KEYS.forEach(k => {
+    if(data[k] !== undefined && data[k] !== null){ localStorage.setItem(k, data[k]); }
+    else { localStorage.removeItem(k); }
+  });
+  localStorage.setItem('lss_local_updated_at', String(data.local_updated_at || Date.now()));
+}
+
+let syncPushTimer = null;
+function bumpLocalUpdatedAt(){
+  localStorage.setItem('lss_local_updated_at', String(Date.now()));
+  if(getSyncCreds()){
+    clearTimeout(syncPushTimer);
+    syncPushTimer = setTimeout(() => syncSave(false), 2500);
+  }
+}
+
+function setSyncStatus(text){ syncStatus.textContent = text; }
+
+async function callSyncRpc(fn, body){
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fn}`, {
+    method: 'POST',
+    headers: {
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  });
+  const json = await res.json().catch(() => null);
+  if(!res.ok){
+    const msg = (json && (json.message || json.hint)) || ('HTTP ' + res.status);
+    throw new Error(msg);
+  }
+  return json;
+}
+
+function updateSyncUiLoggedIn(loggedIn){
+  syncUploadBtn.classList.toggle('hidden', !loggedIn);
+  syncLogoutBtn.classList.toggle('hidden', !loggedIn);
+  syncLoginBtn.textContent = loggedIn ? '🔑 Erneut anmelden' : '🔑 Anmelden / Registrieren';
+}
+
+async function syncLogin(){
+  const username = syncUserInput.value.trim();
+  const password = syncPassInput.value;
+  if(!username || !password){ setSyncStatus('❌ Bitte Benutzername und Passwort eingeben.'); return; }
+  setSyncStatus('⏳ Verbinde…');
+  try{
+    const result = await callSyncRpc('lss_auth', {p_username: username, p_password: password});
+    setSyncCreds(username, password);
+    updateSyncUiLoggedIn(true);
+    const remote = result && result.data;
+    if(result.status === 'created' || !remote || Object.keys(remote).length <= 1){
+      setSyncStatus(`✅ Angemeldet als "${username}" (neues Konto angelegt).`);
+      syncSave(true);
+    } else {
+      const remoteTs = remote.local_updated_at || 0;
+      if(remoteTs > getLocalUpdatedAt()){
+        showSyncBanner(remote, result.updated_at);
+        setSyncStatus(`✅ Angemeldet als "${username}".`);
+      } else {
+        setSyncStatus(`✅ Angemeldet als "${username}" – lokaler Stand ist aktuell.`);
+      }
+    }
+  } catch(e){
+    setSyncStatus('❌ ' + (e.message === 'invalid_password' ? 'Falsches Passwort für diesen Benutzernamen.' : 'Fehler: ' + e.message));
+  }
+}
+
+async function syncSave(manual){
+  const creds = getSyncCreds();
+  if(!creds){ if(manual) setSyncStatus('❌ Bitte zuerst anmelden.'); return; }
+  try{
+    await callSyncRpc('lss_save', {p_username: creds.username, p_password: creds.password, p_data: collectProgressData()});
+    if(manual) setSyncStatus('✅ Hochgeladen: ' + new Date().toLocaleString('de-DE'));
+  } catch(e){
+    if(manual) setSyncStatus('❌ Fehler beim Hochladen: ' + e.message);
+  }
+}
+
+function showSyncBanner(remoteData, updatedAtIso){
+  const when = updatedAtIso ? new Date(updatedAtIso).toLocaleString('de-DE') : '';
+  syncBannerText.textContent = `Neuerer Lernstand von einem anderen Gerät gefunden${when ? ' (' + when + ')' : ''}.`;
+  syncBanner.classList.remove('hidden');
+  syncBannerApplyBtn.onclick = () => {
+    applyProgressData(remoteData);
+    syncBanner.classList.add('hidden');
+    setSyncStatus('✅ Übernommen – Seite wird neu geladen…');
+    location.reload();
+  };
+}
+
+syncLoginBtn.addEventListener('click', syncLogin);
+syncUploadBtn.addEventListener('click', () => syncSave(true));
+syncLogoutBtn.addEventListener('click', () => {
+  clearSyncCreds();
+  updateSyncUiLoggedIn(false);
+  syncBanner.classList.add('hidden');
+  setSyncStatus('Abgemeldet. Lokaler Lernstand bleibt erhalten.');
+});
+
+(function initSync(){
+  const creds = getSyncCreds();
+  if(!creds) return;
+  syncUserInput.value = creds.username;
+  syncPassInput.value = creds.password;
+  updateSyncUiLoggedIn(true);
+  setSyncStatus(`Angemeldet als "${creds.username}". Prüfe auf neueren Stand…`);
+  callSyncRpc('lss_auth', {p_username: creds.username, p_password: creds.password}).then(result => {
+    const remote = result && result.data;
+    if(remote && (remote.local_updated_at || 0) > getLocalUpdatedAt()){
+      showSyncBanner(remote, result.updated_at);
+    }
+    setSyncStatus(`Angemeldet als "${creds.username}".`);
+  }).catch(e => {
+    setSyncStatus('❌ Sync-Login fehlgeschlagen: ' + (e.message === 'invalid_password' ? 'Passwort falsch/geändert.' : e.message));
+  });
+})();
 
 </script>
 
