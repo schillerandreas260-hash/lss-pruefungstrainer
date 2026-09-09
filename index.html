@@ -3129,7 +3129,7 @@ function showResults(){
   const total = userAnswers.length;
   const correctCount = userAnswers.filter(isAnswerCorrect).length;
   const pct = Math.round((correctCount/total)*1000)/10;
-  const passed = pct >= 90;
+  const passed = pct >= 75;
 
   scorePct.textContent = pct + '%';
   scoreFrac.textContent = `${correctCount}/${total}`;
